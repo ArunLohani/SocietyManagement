@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet  id="1"  author="Arun">
+        <sql>
+
+            CREATE TABLE users (
+            id BIGSERIAL PRIMARY KEY,
+            name VARCHAR(50) NOT NULL,
+            email VARCHAR(100) UNIQUE NOT NULL,
+            phone_number VARCHAR(15),
+            role VARCHAR NOT NULL,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            CHECK (role IN ('ADMIN', 'OWNER', 'TENANT')),
+            CHECK (phone_number ~ '^\+?[0-9]{10,15}$')
+            );
+
+
+        </sql>
+    </changeSet>
+</databaseChangeLog>
