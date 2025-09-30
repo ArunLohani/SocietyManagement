@@ -1,0 +1,47 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002
+      author: Arun
+      preConditions:
+        - dbms:
+            type: postgresql
+
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  {
+                    name: name ,
+                    value: "Arun"
+                  }
+              - column:
+                  {
+                    name: email ,
+                    value: "arunlohani007@gmail.com"
+                  }
+              - column:
+                  {
+                    name: password,
+                    value: "password"
+                  }
+              - column:
+                  {
+                    name: phoneNumber,
+                    value: "8171497573"
+                  }
+              - column:
+                  {
+                    name: role,
+                    value: "OWNER"
+                  }
+              - column:
+                  {
+                    name: created_by,
+                    value: "1"
+                  }
+              - column:
+                  {
+                    name: created_at,
+                    value: "2025-09-30T11:00:23.456789Z"
+                  }

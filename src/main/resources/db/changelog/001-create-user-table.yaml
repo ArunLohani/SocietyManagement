@@ -1,0 +1,45 @@
+databaseChangeLog:
+  - changeSet:
+     id: 001
+     author : Arun
+     preConditions:
+       - dbms:
+           type: postgresql
+     changes:
+      - createTable:
+          tableName: users
+          columns:
+            - column:
+                name: id
+                type: BIGINT
+                autoIncrement: true
+                constraints:
+                  primaryKey: true
+            - column:
+                name: name
+                type: VARCHAR(250)
+            - column:
+                name: email
+                type: VARCHAR(250)
+            - column:
+                name: password
+                type: VARCHAR(250)
+            - column:
+                name: phoneNumber
+                type: BIGINT
+            - column:
+                name: role
+                type: VARCHAR(50)
+            - column:
+                name: created_at
+                type: DATE
+            - column:
+                name: updated_at
+                type: DATE
+            - column:
+                name: created_by
+                type: BIGINT
+            - column:
+                name: updated_by
+                type: BIGINT
+
