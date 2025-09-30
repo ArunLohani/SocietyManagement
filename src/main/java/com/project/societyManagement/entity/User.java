@@ -12,13 +12,14 @@ import lombok.Data;
 @Table(name = "users")
 public class User extends AuditableEntity {
 
-
+    @Column(nullable = false)
     private String name;
 
     @Column(nullable = false,unique = true)
     private String email;
     private String password;
-    @Column(length = 10 , name = "phone_number")
+    @Column(name = "phone_number")
+    @Size(max = 15 , min = 10)
     private Integer phoneNumber;
 
     @Enumerated(EnumType.STRING)
