@@ -7,5 +7,6 @@
 
     <include file="create-user-table.xml" relativeToChangelogFile="true"/>
     <include file="insert-sample-user-data.xml" relativeToChangelogFile="true"/>
+    <include file="adding-password-field-to-users-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

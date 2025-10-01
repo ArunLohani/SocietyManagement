@@ -26,21 +26,21 @@ public abstract class AuditableEntity {
     private Long id;
 
 
-    @Column(name = "created_at")
+    @Column(name = "created_at" , nullable = false , updatable = false)
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
 
-    @Column(name = "created_by")
-    @CreatedBy
-    private Long createdBy;
 
-
-    @Column(name = "updated_at")
+    @Column(name = "updated_at" , insertable = false)
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
 
+
+    @Column(name = "created_by")
+    @CreatedBy
+    private Long createdBy;
     @Column(name = "updated_by")
     @CreatedBy
     private Long updatedBy;
