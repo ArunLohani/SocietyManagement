@@ -5,11 +5,10 @@ import com.project.societyManagement.dto.Auth.Request.RegisterRequest;
 import com.project.societyManagement.dto.Auth.Response.AuthTokenResponse;
 import com.project.societyManagement.dto.User.UserDetails;
 import com.project.societyManagement.entity.User;
-import com.project.societyManagement.entity.type.Role;
-import com.project.societyManagement.repository.UserRepo;
 import com.project.societyManagement.service.AuthService;
+import com.project.societyManagement.service.UserService;
 import com.project.societyManagement.util.AuthUtil;
-
+import com.project.societyManagement.util.ValidationUtil;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,70 +21,45 @@ import org.springframework.stereotype.Service;
 public  class AuthServiceImpl implements AuthService {
 
     @Autowired
-    private AuthUtil util;
+    private AuthUtil authUtil;
     @Autowired
     private AuthenticationManager authenticationManager;
     @Autowired
-    private UserRepo repo;
+    private UserService userService;
     @Autowired
     private ModelMapper modelMapper;
     @Autowired
     private PasswordEncoder passwordEncoder;
+    @Autowired
+    private ValidationUtil validationUtil;
+
     public AuthTokenResponse login(LoginRequest loginRequest){
+        validationUtil.validate(loginRequest);
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword())
         );
         User user = (User) authentication.getPrincipal();
-
-        String token = util.getAccessToken(user);
-
+        String token = authUtil.getAccessToken(user);
         UserDetails userDetails = modelMapper.map(user,UserDetails.class);
-
         return new AuthTokenResponse(token,userDetails);
-
-
     }
 
     public AuthTokenResponse register(RegisterRequest registerRequest){
-
-        User existingUser = repo.findByEmail(registerRequest.getEmail());
-
+        validationUtil.validate(registerRequest);
+        User existingUser = userService.findUserByEmail(registerRequest.getEmail());
         if(existingUser != null){
-
             throw new IllegalArgumentException("User with this email already exists.");
         }
-
         User registerUser = modelMapper.map(registerRequest , User.class);
 
-        registerUser.setRole(Role.TENANT);
         registerUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-
         try{
-
-            User user = repo.save(registerUser);
-
-            String token = util.getAccessToken(user);
-
+            User user = userService.saveUser(registerUser);
+            String token = authUtil.getAccessToken(user);
             UserDetails userDetails = modelMapper.map(user,UserDetails.class);
             return new AuthTokenResponse(token,userDetails);
-
-
         } catch (Exception e) {
             throw new RuntimeException(e.getMessage());
         }
-
-
-
-
-
-
-
-
-
-
     }
-
-
-
-
 }

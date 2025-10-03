@@ -15,14 +15,14 @@
         <runningAs  username="postgres"/>
     </preConditions>
 
-    <changeSet  id="1"  author="Arun">
+    <changeSet  id="insert-sample-data-in-users"  author="Arun">
         <sql>
 
-            INSERT INTO users (name,email,phone_number,role,created_by) VALUES (
+            INSERT INTO users (name,email,phone_number,password,created_by) VALUES (
             'Arun Lohani',
             'arunlohani@gmail.com',
             '8171497573',
-            'ADMIN',
+            'password',
             1
             )
 

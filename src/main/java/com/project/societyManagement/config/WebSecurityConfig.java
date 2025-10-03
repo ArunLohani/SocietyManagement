@@ -1,6 +1,5 @@
 package com.project.societyManagement.config;
 
-
 import com.project.societyManagement.filter.JWTFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -24,7 +23,6 @@ public class WebSecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-
         return http
                 .csrf(csrf->csrf.disable())
                 .sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
@@ -32,23 +30,16 @@ public class WebSecurityConfig {
                         request.requestMatchers("api/v1/auth/**", "/v3/api-docs/**" , "/v3/api-docs","/swagger-ui/**","/swagger-ui.html").permitAll()
                                 .anyRequest().authenticated())
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
-
                 .build();
-
     }
-
 
     @Bean
     public PasswordEncoder passwordEncoder(){
-
         return new BCryptPasswordEncoder();
     }
 
     @Bean
     public AuthenticationManager authenticationManager(AuthenticationConfiguration configuration) throws Exception{
-
         return configuration.getAuthenticationManager();
     }
-
-
 }

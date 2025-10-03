@@ -6,7 +6,9 @@
                         http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd">
 
     <include file="create-user-table.xml" relativeToChangelogFile="true"/>
-    <include file="insert-sample-user-data.xml" relativeToChangelogFile="true"/>
     <include file="adding-password-field-to-users-table.xml" relativeToChangelogFile="true"/>
+    <include file="insert-sample-user-data.xml" relativeToChangelogFile="true"/>
+    <include file="create-role-table.xml" relativeToChangelogFile="true"/>
+    <include file="create-user-role-table.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

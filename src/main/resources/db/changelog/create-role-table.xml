@@ -15,13 +15,27 @@
         <runningAs  username="postgres"/>
     </preConditions>
 
-    <changeSet  id="add-password-field-to-user-table"  author="Arun">
+    <changeSet  id="create-role-table"  author="Arun">
         <sql>
 
-        ALTER TABLE users
-            ADD COLUMN password VARCHAR(250)
+            CREATE TABLE role (
+            id BIGSERIAL PRIMARY KEY,
+            role VARCHAR(200)
+            );
 
 
         </sql>
     </changeSet>
+
+    <changeSet id="insert-role-data" author="Arun">
+        <sql>
+
+            INSERT INTO role (role) VALUES
+            ('ADMIN'),
+            ('TENANT'),
+            ('OWNER')
+
+        </sql>
+    </changeSet>
+
 </databaseChangeLog>
