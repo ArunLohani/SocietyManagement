@@ -9,6 +9,7 @@ import com.project.societyManagement.service.AuthService;
 import com.project.societyManagement.service.UserService;
 import com.project.societyManagement.util.AuthUtil;
 import com.project.societyManagement.util.ValidationUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -17,6 +18,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+@Slf4j
 @Service
 public  class AuthServiceImpl implements AuthService {
 
@@ -34,12 +36,17 @@ public  class AuthServiceImpl implements AuthService {
     private ValidationUtil validationUtil;
 
     public AuthTokenResponse login(LoginRequest loginRequest){
+
         validationUtil.validate(loginRequest);
+        log.info("Authenticating User Credentials...");
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getEmail(),loginRequest.getPassword())
         );
+        log.info("User Credentials Authenticated...");
         User user = (User) authentication.getPrincipal();
+        log.info("Generating Auth Token...");
         String token = authUtil.getAccessToken(user);
+        log.info("Auth Token Generated...");
         UserDetails userDetails = modelMapper.map(user,UserDetails.class);
         return new AuthTokenResponse(token,userDetails);
     }
@@ -48,17 +55,23 @@ public  class AuthServiceImpl implements AuthService {
         validationUtil.validate(registerRequest);
         User existingUser = userService.findUserByEmail(registerRequest.getEmail());
         if(existingUser != null){
+            log.error("{} already present in Database",registerRequest.getEmail());
             throw new IllegalArgumentException("User with this email already exists.");
         }
         User registerUser = modelMapper.map(registerRequest , User.class);
-
+        log.info("Encoding User's Password ");
         registerUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
         try{
+            log.info("Saving user in the DB....");
             User user = userService.saveUser(registerUser);
+            log.info("User Saved in the DB");
+            log.info("Generating Auth Token...");
             String token = authUtil.getAccessToken(user);
+            log.info("Auth Token Generated...");
             UserDetails userDetails = modelMapper.map(user,UserDetails.class);
             return new AuthTokenResponse(token,userDetails);
         } catch (Exception e) {
+            log.error("Error while registering user...");
             throw new RuntimeException(e.getMessage());
         }
     }
