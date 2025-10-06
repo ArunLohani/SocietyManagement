@@ -9,31 +9,32 @@ import com.project.societyManagement.service.AuthService;
 import com.project.societyManagement.service.UserService;
 import com.project.societyManagement.util.AuthUtil;
 import com.project.societyManagement.util.ValidationUtil;
+import lombok.NoArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public  class AuthServiceImpl implements AuthService {
 
+
+    private final AuthUtil authUtil;
     @Autowired
-    private AuthUtil authUtil;
-    @Autowired
-    private AuthenticationManager authenticationManager;
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private ModelMapper modelMapper;
-    @Autowired
-    private PasswordEncoder passwordEncoder;
-    @Autowired
-    private ValidationUtil validationUtil;
+    private  AuthenticationManager authenticationManager;
+    private final UserService userService;
+    private final ModelMapper modelMapper;
+    private final PasswordEncoder passwordEncoder;
+    private final ValidationUtil validationUtil;
 
     public AuthTokenResponse login(LoginRequest loginRequest){
 
@@ -75,4 +76,6 @@ public  class AuthServiceImpl implements AuthService {
             throw new RuntimeException(e.getMessage());
         }
     }
+
+
 }

@@ -1,8 +1,6 @@
 package com.project.societyManagement.service;
 
-
 import com.project.societyManagement.entity.User;
-import com.project.societyManagement.entity.type.Role;
 import com.project.societyManagement.repository.UserRepo;
 import com.project.societyManagement.service.impl.UserServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
@@ -34,7 +32,7 @@ public class UserServiceTest {
                 .email("testuser1@gmail.com")
                 .password("testPassword")
                 .phoneNumber("8171497573")
-                .role(Role.TENANT)
+//                .role(Role.TENANT)
                 .createdAt(LocalDateTime.now())
                 .createdBy(1L)
                 .build();
@@ -50,17 +48,9 @@ public class UserServiceTest {
 
     @Test
     void findUserByEmailTest(){
-
         when(userRepo.findByEmail(any(String.class))).thenReturn(user1);
-
         User user=userService.findUserByEmail("testUser1@gmail.com");
-
         assertNotNull(user);
-
-
-
-
     }
-
 
 }

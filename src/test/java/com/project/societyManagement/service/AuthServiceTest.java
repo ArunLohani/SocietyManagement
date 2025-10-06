@@ -5,7 +5,6 @@ import com.project.societyManagement.dto.Auth.Request.RegisterRequest;
 import com.project.societyManagement.dto.Auth.Response.AuthTokenResponse;
 import com.project.societyManagement.dto.User.UserDetails;
 import com.project.societyManagement.entity.User;
-import com.project.societyManagement.entity.type.Role;
 import com.project.societyManagement.service.impl.AuthServiceImpl;
 import com.project.societyManagement.util.AuthUtil;
 import org.junit.jupiter.api.BeforeEach;
@@ -59,7 +58,7 @@ public class AuthServiceTest {
                 .email("testuser1@gmail.com")
                 .password("testPassword")
                 .phoneNumber("8171497573")
-                .role(Role.TENANT)
+//                .role(Role.TENANT)
                 .createdAt(LocalDateTime.now())
                 .createdBy(1L)
                 .build();
