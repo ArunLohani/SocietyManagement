@@ -83,7 +83,7 @@ public class AuthServiceTest {
     @Test
     void registerTestSuccess(){
         RegisterRequest registerRequest = new RegisterRequest("TestUser1", "testuser1@gmail.com"
-                ,"testPassword","8171497573");
+                ,"testPassword","8171497573","TENANT");
         UserDetails userDetails = new UserDetails(1L,"TestUser1","testuser1@gmail,com", "TENANT");
         AuthTokenResponse mockAuthTokenResponse = new AuthTokenResponse("MOCK_TOKEN",userDetails);
         when(userService.findUserByEmail(registerRequest.getEmail())).thenReturn(null);
@@ -101,7 +101,7 @@ public class AuthServiceTest {
     @Test
     void registerTestFailure(){
         RegisterRequest registerRequest = new RegisterRequest("TestUser1", "testuser1@gmail.com"
-                ,"testPassword","8171497573");
+                ,"testPassword","8171497573","TENANT");
         when(userService.findUserByEmail(registerRequest.getEmail())).thenReturn(user1);
         assertThrows(IllegalArgumentException.class, () -> authService.register(registerRequest));
     }

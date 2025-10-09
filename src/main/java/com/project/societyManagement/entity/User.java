@@ -6,18 +6,18 @@ import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.SuperBuilder;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import com.project.societyManagement.entity.Role;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 
 @Data
@@ -37,7 +37,6 @@ public class User extends AuditableEntity implements UserDetails {
     @Email(message = "Email should be valid.")
     private String email;
 
-    @NotEmpty(message = "Password cannot be blank.")
     @Size(min=8,message = "Password must be of atleast 8 characters long.")
     private String password;
 
@@ -45,21 +44,23 @@ public class User extends AuditableEntity implements UserDetails {
     @Pattern(regexp = "^\\d{10}$", message = "Phone number must be 10 digits")
     private String phoneNumber;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name = "user_roles",
             joinColumns = @JoinColumn(name="user_id"),
             inverseJoinColumns = @JoinColumn(name = "role_id")
     )
-    private Set<Role> roles;
+    private Set<Role> roles = new HashSet<>();
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of();
+        return roles.stream().map(role -> new SimpleGrantedAuthority("ROLE_" + role.getRole())).collect(Collectors.toSet());
     }
 
     @Override
     public String getUsername() {
         return email;
     }
+
+
 }

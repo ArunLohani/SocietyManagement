@@ -3,7 +3,9 @@ package com.project.societyManagement.service.impl;
 import com.project.societyManagement.dto.Auth.Request.RegisterRequest;
 import com.project.societyManagement.dto.Auth.Response.AuthTokenResponse;
 import com.project.societyManagement.dto.User.UserDetails;
+import com.project.societyManagement.entity.Role;
 import com.project.societyManagement.entity.User;
+import com.project.societyManagement.repository.RoleRepo;
 import com.project.societyManagement.service.AuthService;
 import com.project.societyManagement.service.UserService;
 import com.project.societyManagement.util.AuthUtil;
@@ -17,6 +19,9 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 
 import java.security.SecureRandom;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -26,13 +31,8 @@ public class OAuth2ServiceImpl {
     private final UserService userService;
     private final AuthUtil authUtil;
     private final ModelMapper modelMapper;
-    private final PasswordEncoder passwordEncoder;
-    private String generateSecureRandomPassword() {
+    private final RoleRepo roleRepo;
 
-        return new SecureRandom().ints(20, 33, 122)
-                .collect(StringBuilder::new, StringBuilder::appendCodePoint, StringBuilder::append)
-                .toString();
-    }
     public AuthTokenResponse handleOauth2LoginRequest(OAuth2User oAuth2User) {
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
@@ -40,25 +40,24 @@ public class OAuth2ServiceImpl {
         AuthTokenResponse authTokenResponse = null;
         //Signup
         if (user == null) {
-            String randomPassword = generateSecureRandomPassword();
-                User registerUser = User.builder()
+                Set<Role> roles = new HashSet<>();
+                roles.add( roleRepo.findByRole("TENANT").orElse(null));
+                user = User.builder()
                         .email(email)
                         .name(name)
-                        .password(passwordEncoder.encode(randomPassword))
+                        .roles(roles)
+                        .password(null)
                         .build();
-                registerUser = userService.saveUser(registerUser);
+                user = userService.saveUser(user);
                 log.info("User Saved in the DB");
-                log.info("Generating Auth Token...");
-                String token = authUtil.getAccessToken(registerUser);
-                log.info("Auth Token Generated...");
-                UserDetails userDetails = modelMapper.map(registerUser,UserDetails.class);
-                return new AuthTokenResponse(token,userDetails);
+
         }
-        else {
-            String token = authUtil.getAccessToken(user);
-            UserDetails userDetails = modelMapper.map(user,UserDetails.class);
+
+        log.info("Generating Auth Token...");
+        String token = authUtil.getAccessToken(user);
+        UserDetails userDetails = UserDetails.builder().id(user.getId()).email(user.getEmail()).name(user.getName()).roles(user.getRoles().stream().map(role -> role.getRole()).collect(Collectors.toSet())).build();
             authTokenResponse = new AuthTokenResponse(token,userDetails);
-        }
+
 
         return authTokenResponse;
 

@@ -1,13 +1,11 @@
 package com.project.societyManagement.util;
 
-
 import com.project.societyManagement.exception.ValidationException;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;

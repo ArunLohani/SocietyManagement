@@ -31,6 +31,14 @@ public class GlobalExceptionHandler {
         return new ResponseEntity<>(errorResponse,HttpStatus.UNAUTHORIZED);
 
     }
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<ErrorResponse<Map<String,String>>> handleIllegalArguement(IllegalArgumentException ex){
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatusCode.valueOf(400),"Illegal Arguments Provided",ex.getLocalizedMessage());
+
+        return new ResponseEntity<>(errorResponse,HttpStatus.BAD_REQUEST);
+
+    }
 
 
     @ExceptionHandler(Exception.class)
