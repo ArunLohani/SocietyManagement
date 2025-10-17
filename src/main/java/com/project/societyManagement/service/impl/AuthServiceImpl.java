@@ -5,9 +5,11 @@ import com.project.societyManagement.dto.Auth.Request.RegisterRequest;
 import com.project.societyManagement.dto.Auth.Response.AuthTokenResponse;
 import com.project.societyManagement.dto.User.UserDetails;
 import com.project.societyManagement.entity.Role;
+import com.project.societyManagement.entity.Tenant;
 import com.project.societyManagement.entity.User;
 import com.project.societyManagement.service.AuthService;
 import com.project.societyManagement.service.RoleService;
+import com.project.societyManagement.service.TenantService;
 import com.project.societyManagement.service.UserService;
 import com.project.societyManagement.util.AuthUtil;
 import com.project.societyManagement.util.ValidationUtil;
@@ -40,6 +42,7 @@ public class AuthServiceImpl implements AuthService {
     private final PasswordEncoder passwordEncoder;
     private final ValidationUtil validationUtil;
     private final RoleService roleService;
+    private final TenantService tenantService;
     @Autowired
     private AuthenticationManager authenticationManager;
 
@@ -61,8 +64,8 @@ public class AuthServiceImpl implements AuthService {
 
     public AuthTokenResponse register(RegisterRequest registerRequest, HttpServletResponse response) {
         validationUtil.validate(registerRequest);
-        User existingUser = userService.findUserByEmail(registerRequest.getEmail());
-        if (existingUser != null) {
+        Boolean existingUser = userService.findExistingUserByEmail(registerRequest.getEmail());
+        if (existingUser == true) {
             log.error("{} already present in Database", registerRequest.getEmail());
             throw new IllegalArgumentException("User with this email already exists.");
         }
@@ -77,6 +80,8 @@ public class AuthServiceImpl implements AuthService {
         registerUser.setRoles(roles);
         log.info("Encoding User's Password ");
         registerUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
+        Tenant tenant = tenantService.findTenantById(1L);
+        registerUser.setTenant(tenant);
         try {
             log.info("Saving user in the DB....");
             User user = userService.saveUser(registerUser);

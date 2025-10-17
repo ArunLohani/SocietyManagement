@@ -1,6 +1,7 @@
 package com.project.societyManagement.exception.handler;
 
 import com.project.societyManagement.dto.Error.ErrorResponse;
+import com.project.societyManagement.exception.UserNotFoundException;
 import com.project.societyManagement.exception.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
@@ -13,6 +14,13 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
+    @ExceptionHandler(UserNotFoundException.class)
+    public ResponseEntity<ErrorResponse<Map<String,String >>> handleUserNotFoundException(UserNotFoundException ex){
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatusCode.valueOf(404),ex.getMessage(),ex.getLocalizedMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.NOT_FOUND);
+
+    }
 
     @ExceptionHandler(ValidationException.class)
     public ResponseEntity<ErrorResponse<Map<String,String>>> handleValidationNotValid(ValidationException ex){

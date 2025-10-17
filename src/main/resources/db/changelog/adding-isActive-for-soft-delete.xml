@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet  id="adding-isActive-for-soft-delete-in-all-tables"  author="Arun">
+        <sql>
+
+            ALTER TABLE users
+            ADD COLUMN is_active BOOLEAN DEFAULT TRUE;
+
+            ALTER TABLE role
+            ADD created_by BIGINT,
+            ADD created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            ADD updated_by BIGINT,
+            ADD updated_at TIMESTAMPTZ,
+            ADD COLUMN is_active BOOLEAN DEFAULT TRUE;
+
+            ALTER TABLE tenant
+            ADD COLUMN is_active BOOLEAN DEFAULT TRUE;
+
+            ALTER TABLE user_roles
+            ADD COLUMN is_active BOOLEAN DEFAULT TRUE;
+
+        </sql>
+    </changeSet>
+</databaseChangeLog>

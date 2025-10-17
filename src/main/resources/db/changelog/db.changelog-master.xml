@@ -10,5 +10,8 @@
     <include file="insert-sample-user-data.xml" relativeToChangelogFile="true"/>
     <include file="create-role-table.xml" relativeToChangelogFile="true"/>
     <include file="create-user-role-table.xml" relativeToChangelogFile="true"/>
+    <include file="create-tenant-table-and-add-tenantId-col-to-users.xml" relativeToChangelogFile="true"/>
+    <include file="adding-isActive-for-soft-delete.xml" relativeToChangelogFile="true"/>
+    <include file="creating-menu-and-action-tables.xml" relativeToChangelogFile="true"/>
 
 </databaseChangeLog>

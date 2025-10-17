@@ -1,7 +1,8 @@
-package com.project.societyManagement.common;
+package com.project.societyManagement.entity.common;
 
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -22,18 +23,25 @@ public abstract class AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
     @Column(name = "created_at" , nullable = false , updatable = false)
     @CreatedDate
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime createdAt;
+
     @Column(name = "updated_at" , insertable = false)
     @LastModifiedDate
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime updatedAt;
-    @Column(name = "created_by")
+
+    @Column(name = "created_by",updatable = false)
     @CreatedBy
     private Long createdBy;
-    @Column(name = "updated_by")
+
+    @Column(name = "updated_by",insertable = false)
     @CreatedBy
     private Long updatedBy;
+
+    @Column(name = "is_active")
+    private boolean isActive = true;
 }

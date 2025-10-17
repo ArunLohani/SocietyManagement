@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet  id="create-tenant-table"  author="Arun">
+        <sql>
+            CREATE TABLE tenant  (
+            id BIGSERIAL NOT NULL,
+            name VARCHAR(250),
+            PRIMARY KEY (id),
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="add-tenantId-to-user-table" author="Arun">
+        <sql>
+            ALTER TABLE users
+            ADD tenant_id BIGINT
+        </sql>
+    </changeSet>
+
+    <changeSet id="create-sample-tenant" author="Arun">
+        <sql>
+            INSERT INTO tenant (name)
+            VALUES ('The Argusoft Society')
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="insert-tenantId-to-sample-data" author="Arun">
+        <sql>
+            UPDATE users
+            SET tenant_id = 1
+            WHERE id = 1;
+        </sql>
+    </changeSet>
+
+
+
+</databaseChangeLog>

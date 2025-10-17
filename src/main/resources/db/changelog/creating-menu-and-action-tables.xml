@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet  id="create-menu-table"  author="Arun">
+        <sql>
+
+            CREATE TABLE menu (
+            id BIGSERIAL PRIMARY KEY,
+            name VARCHAR(50) NOT NULL,
+            description VARCHAR(500),
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE
+            );
+
+        </sql>
+    </changeSet>
+
+    <changeSet  id="create-action-table"  author="Arun">
+        <sql>
+
+            CREATE TABLE action (
+            id BIGSERIAL PRIMARY KEY,
+            action VARCHAR(50) NOT NULL,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet  id="create-tenant-role-table"  author="Arun">
+        <sql>
+
+            CREATE TABLE tenant_role (
+            id BIGSERIAL PRIMARY KEY,
+            tenant_id BIGINT NOT NULL,
+            role_id BIGINT NOT NULL,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (tenant_id) REFERENCES tenant (id),
+            FOREIGN KEY (role_id) REFERENCES role (id)
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet  id="create-tenant-role-menu-table"  author="Arun">
+        <sql>
+            CREATE TABLE tenant_role_menu (
+            id BIGSERIAL PRIMARY KEY,
+            tenant_role_id BIGINT NOT NULL,
+            menu_id BIGINT NOT NULL,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (tenant_role_id) REFERENCES tenant_role (id),
+            FOREIGN KEY (menu_id) REFERENCES menu (id)
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet  id="create-tenant-role-menu-action-table"  author="Arun">
+        <sql>
+            CREATE TABLE tenant_role_menu_action (
+            id BIGSERIAL PRIMARY KEY,
+            tenant_role_menu_id BIGINT NOT NULL,
+            action_id BIGINT NOT NULL,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (tenant_role_menu_id) REFERENCES tenant_role_menu (id),
+            FOREIGN KEY (action_id) REFERENCES action (id)
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="insert-sample-data-tenant" author="Arun">
+            <sql>
+                INSERT INTO tenant (name,created_by,is_active) VALUES
+                ('The Argusoft Society',1,TRUE);
+            </sql>
+        </changeSet>
+        <changeSet id="insert-sample-data-menu" author="Arun">
+            <sql>
+                INSERT INTO menu (name, description, created_by, is_active) VALUES
+                ('Dashboard', 'Main dashboard menu', 1, TRUE),
+                ('Reports', 'Reports menu', 1, TRUE);
+            </sql>
+        </changeSet>
+        <changeSet id="insert-sample-data-action" author="Arun">
+            <sql>
+                INSERT INTO action (action, created_by, is_active) VALUES
+                ('CREATE', 1, TRUE),
+                ('READ', 1, TRUE),
+                ('UPDATE', 1, TRUE),
+                ('DELETE', 1, TRUE);
+            </sql>
+        </changeSet>
+        <changeSet id="insert-sample-data-tenant-role" author="Arun">
+            <sql>
+
+                INSERT INTO tenant_role (tenant_id, role_id, created_by, is_active) VALUES
+                (1, 1, 1, TRUE),
+                (1, 3, 1, TRUE);
+            </sql>
+        </changeSet>
+        <changeSet id="insert-sample-data-tenant-role-menu" author="Arun">
+            <sql>
+
+                INSERT INTO tenant_role_menu (tenant_role_id, menu_id, created_by, is_active) VALUES
+                (1, 1, 1, TRUE),
+                (2, 2, 1, TRUE);
+            </sql>
+        </changeSet>
+        <changeSet id="insert-sample-data-tenant-role-menu-action" author="Arun">
+            <sql>
+
+                INSERT INTO tenant_role_menu_action (tenant_role_menu_id, action_id, created_by, is_active) VALUES
+                (1, 1, 1, TRUE),
+                (1, 2, 1, TRUE),
+                (2, 3, 1, TRUE),
+                (2, 4, 1, TRUE);
+            </sql>
+        </changeSet>
+
+</databaseChangeLog>

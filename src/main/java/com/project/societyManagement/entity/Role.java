@@ -2,10 +2,10 @@ package com.project.societyManagement.entity;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.project.societyManagement.entity.common.AuditableEntity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -15,15 +15,11 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Table(name = "role")
-public class Role {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+public class Role extends AuditableEntity {
 
     @NotBlank(message = "Role cannot be blank.")
     @Column(unique = true)
     private String role;
-
 
     @ManyToMany(mappedBy = "roles")
     @JsonIgnore
