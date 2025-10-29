@@ -9,6 +9,7 @@ public interface MenuService {
 
     public Menu findMenuById(Long id);
 
-    public Page<Menu> searchUser(Pageable pageable);
+    public Page<Menu> searchMenu(Pageable pageable);
 
+    public Menu createMenu(Menu menu);
 }

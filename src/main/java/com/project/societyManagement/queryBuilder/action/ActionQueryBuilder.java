@@ -1,10 +1,9 @@
-package com.project.societyManagement.queryBuilder.tenantRole;
+package com.project.societyManagement.queryBuilder.action;
 
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.CriteriaBuilderFactory;
 import com.project.societyManagement.entity.*;
 import com.project.societyManagement.queryBuilder.core.AbstractFilterableQueryBuilder;
-import com.project.societyManagement.queryBuilder.user.UserFilter;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -17,9 +16,9 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class TenantRoleQueryBuilder extends AbstractFilterableQueryBuilder<TenantRoles, TenantRoleFilter> {
+public class ActionQueryBuilder extends AbstractFilterableQueryBuilder<Action, ActionFilter> {
 
-    TenantRoleQueryBuilder(EntityManager entityManager , CriteriaBuilderFactory cbf){
+    ActionQueryBuilder(EntityManager entityManager , CriteriaBuilderFactory cbf){
         super(entityManager,cbf);
     }
 
@@ -51,36 +50,22 @@ public class TenantRoleQueryBuilder extends AbstractFilterableQueryBuilder<Tenan
     }
 
     @Override
-    protected Class<TenantRoles> getEntityClass() {
-        return TenantRoles.class;
+    protected Class<Action> getEntityClass() {
+        return Action.class;
     }
 
     @Override
     protected String getEntityAlias() {
-        return "tr";
+        return "a";
     }
 
     @Override
-    public void applyAuthorization(CriteriaBuilder<TenantRoles> cb){
-        Set<String> roles = getLoggedInUserRole();
-        if (roles.contains("ADMIN")){
-            return ;
-        }
-
-        User user = getCurrentUser();
-        Long tenantId = user.getTenant().getId();
-        Set<Long> roleIds = user.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
-
-        cb.where("tr.tenant.id").eq(tenantId);
-
+    public void applyAuthorization(CriteriaBuilder<Action> cb){
     }
 
     @Override
-    public void applyFilters(CriteriaBuilder<TenantRoles> cb,TenantRoleFilter filter){
-        if(filter.getId()!=null) cb.where("tr.id").eq(filter.getId());
-        if(filter.getTenantId() != null) cb.where("tr.tenant.id").eq(filter.getTenantId());
-        if(filter.getRoleId() != null) cb.where("tr.role.id").eq(filter.getRoleId());
+    public void applyFilters(CriteriaBuilder<Action> cb,ActionFilter filter){
+        if(filter.getId()!=null) cb.where("a.id").eq(filter.getId());
+        if(filter.getAction() != null) cb.where("a.action").like().value("%"+filter.getAction()+"%").noEscape();
     }
-
-
 }

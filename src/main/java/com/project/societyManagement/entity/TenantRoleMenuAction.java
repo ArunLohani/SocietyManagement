@@ -18,7 +18,6 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "tenant_role_menu_action")
 public class TenantRoleMenuAction extends AuditableEntity {
 
-
     @ManyToOne
     @JoinColumn(name = "tenant_role_menu_id")
     private TenantRoleMenu tenantRoleMenu;
@@ -26,5 +25,4 @@ public class TenantRoleMenuAction extends AuditableEntity {
     @ManyToOne
     @JoinColumn(name = "action_id")
     private Action action;
-
 }

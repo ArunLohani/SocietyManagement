@@ -41,6 +41,4 @@ public class AuthController {
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
-
-
 }

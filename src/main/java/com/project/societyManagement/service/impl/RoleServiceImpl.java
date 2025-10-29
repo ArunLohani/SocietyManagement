@@ -1,6 +1,8 @@
 package com.project.societyManagement.service.impl;
 
+import com.project.societyManagement.entity.Action;
 import com.project.societyManagement.entity.Role;
+import com.project.societyManagement.queryBuilder.action.ActionFilter;
 import com.project.societyManagement.queryBuilder.role.RoleFilter;
 import com.project.societyManagement.queryBuilder.role.RoleQueryBuilder;
 import com.project.societyManagement.repository.RoleRepo;
@@ -48,6 +50,13 @@ public class RoleServiceImpl implements RoleService {
         role.setActive(false);
         role = roleRepo.save(role);
         return role;
+    }
+
+    @Override
+    public List<Role> searchRole() {
+        RoleFilter roleFilter = new RoleFilter();
+        List<Role> roles= roleQueryBuilder.search(roleFilter);
+        return roles;
     }
 
 }
