@@ -13,6 +13,7 @@ public class UserFilter {
     private Long userId;
     private String email;
     private String name;
+    private Long tenantId;
 //    private String phoneNumber;
 
 }

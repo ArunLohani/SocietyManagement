@@ -1,30 +1,29 @@
-package com.project.societyManagement.queryBuilder.user;
+package com.project.societyManagement.queryBuilder.tenant;
 
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.CriteriaBuilderFactory;
 import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.entity.Role;
+import com.project.societyManagement.entity.Tenant;
+import com.project.societyManagement.entity.TenantRoles;
 import com.project.societyManagement.entity.User;
 import com.project.societyManagement.queryBuilder.core.AbstractFilterableQueryBuilder;
+import com.project.societyManagement.queryBuilder.role.RoleFilter;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
-import java.util.Collection;
+
 import java.util.Collections;
-import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
-@Slf4j
 @Component
-public class UserQueryBuilder extends AbstractFilterableQueryBuilder<User,UserFilter> {
+@Slf4j
+public class TenantQueryBuilder extends AbstractFilterableQueryBuilder<Tenant, TenantFilter> {
 
-
-    UserQueryBuilder(EntityManager entityManager , CriteriaBuilderFactory cbf ){
+    TenantQueryBuilder(EntityManager entityManager , CriteriaBuilderFactory cbf){
         super(entityManager,cbf);
     }
 
@@ -33,13 +32,7 @@ public class UserQueryBuilder extends AbstractFilterableQueryBuilder<User,UserFi
         if(auth==null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken){
             return null;
         }
-      Object principal = auth.getPrincipal();
-        //Check if principal is actually User entity
-        if(principal instanceof User){
-            return (User) principal;
-        }
-        //During Oauth2 login, principal might be of Oauth2User
-        return null;
+        return (User) auth.getPrincipal();
     }
 
     public Set<String> getLoggedInUserRole(){
@@ -62,42 +55,43 @@ public class UserQueryBuilder extends AbstractFilterableQueryBuilder<User,UserFi
     }
 
     @Override
-    protected Class<User> getEntityClass() {
-        return User.class;
+    protected Class<Tenant> getEntityClass() {
+        return Tenant.class;
     }
 
     @Override
     protected String getEntityAlias() {
-        return "u";
+        return "t";
     }
 
     @Override
-    public void applyAuthorization(CriteriaBuilder<User> cb){
+    public void applyAuthorization(CriteriaBuilder<Tenant> cb){
         Set<String> roles = getLoggedInUserRole();
-        if (roles.contains("ADMIN")){
-            return ;
+        if(roles.contains("SUPER_ADMIN")){
+            return;
         }
-        if (roles.contains("OWNER")){
-             cb.where("u.tenant.id").eq(TenantContextHolder.getCurrentTenant());
-             return;
+        User user = getCurrentUser();
+        Set<Long> roleIds = user.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
+        if(roles.contains("ADMIN")){
+            cb.where("t.id").eq(TenantContextHolder.getCurrentTenant());
+            return;
+        }
+        if (roles.contains("OWNER")) {
+            cb.where("t.id").eq(TenantContextHolder.getCurrentTenant());
+            return;
         }
         if (roles.contains("TENANT")){
-            cb.where("u.tenant.id").eq(TenantContextHolder.getCurrentTenant());
+            cb.where("t.id").eq(TenantContextHolder.getCurrentTenant());
             return;
         }
     }
 
     @Override
-    public void applyFilters(CriteriaBuilder<User> cb,UserFilter filter){
-        if(filter.getUserId()!=null) cb.where("u.id").eq(filter.getUserId());
-        if(filter.getName() != null) cb.where("u.name").like().value("%"+filter.getName()+"%").noEscape();
-        if(filter.getEmail() != null) cb.where("u.email").like().value("%"+filter.getEmail()+"%").noEscape();
-        if (filter.getTenantId() != null) {
-            if (filter.getTenantId() == 0) {
-                cb.where("u.tenant").isNull();
-            } else {
-                cb.where("u.tenant.id").eq(filter.getTenantId());
-            }
-        }    }
+    public void applyFilters(CriteriaBuilder<Tenant> cb,TenantFilter filter){
+        if(filter.getId()!=null) cb.where("t.id").eq(filter.getId());
+        if(filter.getName() != null) cb.where("t.name").eq(filter.getName());
+
+    }
+
 
 }

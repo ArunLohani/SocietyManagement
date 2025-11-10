@@ -24,4 +24,6 @@ public class Menu extends AuditableEntity {
     private String menuDescription;
 
 
+
+
 }

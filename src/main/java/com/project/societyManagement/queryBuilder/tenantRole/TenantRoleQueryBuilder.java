@@ -2,6 +2,7 @@ package com.project.societyManagement.queryBuilder.tenantRole;
 
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.CriteriaBuilderFactory;
+import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.entity.*;
 import com.project.societyManagement.queryBuilder.core.AbstractFilterableQueryBuilder;
 import com.project.societyManagement.queryBuilder.user.UserFilter;
@@ -63,15 +64,23 @@ public class TenantRoleQueryBuilder extends AbstractFilterableQueryBuilder<Tenan
     @Override
     public void applyAuthorization(CriteriaBuilder<TenantRoles> cb){
         Set<String> roles = getLoggedInUserRole();
+
+        if(roles.contains("SUPER_ADMIN")){
+            return;
+        }
         if (roles.contains("ADMIN")){
-            return ;
+            cb
+                    .where("tr.role.role").notEq("ADMIN")
+                    .where("tr.role.role").notEq("SUPER_ADMIN");
+            return;
         }
 
+
         User user = getCurrentUser();
-        Long tenantId = user.getTenant().getId();
+
         Set<Long> roleIds = user.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
 
-        cb.where("tr.tenant.id").eq(tenantId);
+        cb.where("tr.tenant.id").eq(TenantContextHolder.getCurrentTenant());
 
     }
 
@@ -80,6 +89,7 @@ public class TenantRoleQueryBuilder extends AbstractFilterableQueryBuilder<Tenan
         if(filter.getId()!=null) cb.where("tr.id").eq(filter.getId());
         if(filter.getTenantId() != null) cb.where("tr.tenant.id").eq(filter.getTenantId());
         if(filter.getRoleId() != null) cb.where("tr.role.id").eq(filter.getRoleId());
+        if(filter.getIsActive()!=null) cb.where("tr.isActive").eq(filter.getIsActive());
     }
 
 

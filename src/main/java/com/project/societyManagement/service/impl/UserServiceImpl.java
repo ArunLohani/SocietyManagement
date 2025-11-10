@@ -12,6 +12,7 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -34,8 +35,6 @@ public class UserServiceImpl implements UserService {
         return savedUser;
     }
 
-
-
     @Override
     public User findUserByEmail(String email) {
         UserFilter userFilter = new UserFilter();
@@ -43,6 +42,17 @@ public class UserServiceImpl implements UserService {
         List<User> users = userQueryBuilder.search(userFilter);
         if(users.isEmpty()){
             throw new UserNotFoundException("User not found with email " + email);}
+        User user = users.get(0);
+        return user;
+    }
+
+    public User findUserByEmailWithoutAuth(String email){
+        UserFilter userFilter = new UserFilter();
+        userFilter.setEmail(email);
+        List<User> users = userQueryBuilder.search(userFilter);
+        if(users.isEmpty()){
+            return null;
+        }
         User user = users.get(0);
         return user;
     }
@@ -66,13 +76,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public UserDetails findUserById(Long id) {
+    public User findUserById(Long id) {
         UserFilter userFilter = new UserFilter();
         userFilter.setUserId(id);
         User user = userQueryBuilder.findById(userFilter);
-//        UserDetails userDetails = modelMapper.map(user,UserDetails.class);
-        UserDetails userDetails = UserDetails.builder().id(user.getId()).email(user.getEmail()).name(user.getName()).roles(user.getRoles().stream().map(role -> role.getRole()).collect(Collectors.toSet())).build();
-        return userDetails;
+        return user;
     }
 
     public Page<User> searchUser(String name, String email, Pageable pageable){
@@ -82,5 +90,33 @@ public class UserServiceImpl implements UserService {
         return userQueryBuilder.searchPaginated(userFilter,pageable);
     }
 
+    public List<UserDetails> findUsersNotAssignedToTenant(){
+        UserFilter userFilter = new UserFilter();
+        userFilter.setTenantId(0L);
+        List<User> users =  userQueryBuilder.search(userFilter);
+        List<UserDetails> userDetails = users.stream()
+                .map(user ->
+                        UserDetails.builder().
+                                id(user.getId()).
+                                email(user.getEmail()).
+                                name(user.getName()).
+                                roles(user.getRoles().stream().map(role -> role.getRole())
+                                        .collect(Collectors.toSet())).build() ).
+                toList();
+        return userDetails;
+    }
 
+    @Override
+    public Boolean checkUserTenanStatus(Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        UserFilter userFilter = new UserFilter();
+        userFilter.setTenantId(0L);
+        userFilter.setUserId(user.getId());
+         try{
+             user =  userQueryBuilder.findById(userFilter);
+             return false;
+         } catch (Exception e) {
+             return true;
+         }
+    }
 }

@@ -3,15 +3,10 @@ package com.project.societyManagement.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.societyManagement.entity.common.AuditableEntity;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
+import org.apache.commons.lang3.builder.ToStringExclude;
 
 import java.util.List;
 
@@ -26,7 +21,9 @@ public class Tenant extends AuditableEntity {
     @NotNull
     private String name;
 
-    @OneToMany(mappedBy = "tenant" , cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "tenant" , cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     @JsonIgnore
     List<User> residents;
 

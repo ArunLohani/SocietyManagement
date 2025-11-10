@@ -16,7 +16,7 @@ import lombok.experimental.SuperBuilder;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "actions")
+@Table(name = "action")
 public class Action extends AuditableEntity {
     @Enumerated(EnumType.STRING)
     private Actions action;

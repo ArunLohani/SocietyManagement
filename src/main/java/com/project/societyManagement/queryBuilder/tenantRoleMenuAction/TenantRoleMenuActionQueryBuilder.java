@@ -63,8 +63,8 @@ public class TenantRoleMenuActionQueryBuilder extends AbstractFilterableQueryBui
     @Override
     public void applyAuthorization(CriteriaBuilder<TenantRoleMenuAction> cb){
         Set<String> roles = getLoggedInUserRole();
-        if (roles.contains("ADMIN")){
-            return ;
+        if(roles.contains("SUPER_ADMIN")){
+            return;
         }
 
 //        User user = getCurrentUser();

@@ -36,12 +36,12 @@ public class OAuth2ServiceImpl {
     public AuthTokenResponse handleOauth2LoginRequest(OAuth2User oAuth2User) {
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
-        User user = userService.findUserByEmail(email);
+        User user = userService.findUserByEmailWithoutAuth(email);
         AuthTokenResponse authTokenResponse = null;
         //Signup
         if (user == null) {
                 Set<Role> roles = new HashSet<>();
-                roles.add( roleRepo.findByRole("TENANT").orElse(null));
+//                roles.add( roleRepo.findByRole("TENANT").orElse(null));
                 user = User.builder()
                         .email(email)
                         .name(name)
@@ -50,16 +50,11 @@ public class OAuth2ServiceImpl {
                         .build();
                 user = userService.saveUser(user);
                 log.info("User Saved in the DB");
-
         }
-
         log.info("Generating Auth Token...");
         String token = authUtil.getAccessToken(user);
         UserDetails userDetails = UserDetails.builder().id(user.getId()).email(user.getEmail()).name(user.getName()).roles(user.getRoles().stream().map(role -> role.getRole()).collect(Collectors.toSet())).build();
             authTokenResponse = new AuthTokenResponse(token,userDetails);
-
-
         return authTokenResponse;
-
     }
 }

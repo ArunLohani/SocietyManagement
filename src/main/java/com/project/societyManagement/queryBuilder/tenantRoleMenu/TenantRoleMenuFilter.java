@@ -12,5 +12,5 @@ public class TenantRoleMenuFilter {
     private Long tenantRoleId;
     private Long menuId;
     private Long id;
-    private boolean isActive;
+    private Boolean isActive = true;
 }

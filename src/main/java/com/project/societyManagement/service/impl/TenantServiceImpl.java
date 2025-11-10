@@ -1,19 +1,66 @@
 package com.project.societyManagement.service.impl;
 
-import com.project.societyManagement.entity.Tenant;
+import com.project.societyManagement.dto.User.UserDetails;
+import com.project.societyManagement.entity.*;
+import com.project.societyManagement.queryBuilder.tenant.TenantFilter;
+import com.project.societyManagement.queryBuilder.tenant.TenantQueryBuilder;
+import com.project.societyManagement.queryBuilder.tenantRoleMenu.TenantRoleMenuFilter;
+import com.project.societyManagement.queryBuilder.tenantRoleMenuAction.TenantRoleMenuActionFilter;
 import com.project.societyManagement.repository.TenantRepo;
 import com.project.societyManagement.service.TenantService;
+import com.project.societyManagement.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class TenantServiceImpl implements TenantService {
 
     @Autowired
     private TenantRepo tenantRepo;
+    @Autowired
+    private TenantQueryBuilder tenantQueryBuilder;
+    @Autowired
+    private UserService userService;
 
     @Override
     public Tenant findTenantById(Long id) {
-        return tenantRepo.findById(id).orElse(null);
+
+        TenantFilter tenantFilter = new TenantFilter();
+        tenantFilter.setId(id);
+
+        return tenantQueryBuilder.findById(tenantFilter);
     }
+
+    @Override
+    public List<Tenant> getAllTenants(){
+
+        TenantFilter tenantFilter = new TenantFilter();
+        return tenantQueryBuilder.search(tenantFilter);
+    }
+
+    @Override
+    public Tenant createTenant(String  tenant) {
+        Tenant tenant1 = new Tenant();
+        tenant1.setName(tenant);
+       return tenantRepo.save(tenant1);
+    }
+
+    @Override
+    public Tenant addUserToTenant(Long tenantId , Long userId){
+        // Fetch tenant
+        TenantFilter tenantFilter = new TenantFilter();
+        tenantFilter.setId(tenantId);
+        Tenant tenant = tenantQueryBuilder.findById(tenantFilter);
+        // Fetch User
+        User user = userService.findUserById(userId);
+        user.setTenant(tenant);
+        List<User> residents = tenant.getResidents();
+        residents.add(user);
+        tenant.setResidents(residents);
+        tenant = tenantRepo.save(tenant);
+        return tenant;
+    }
+
 }

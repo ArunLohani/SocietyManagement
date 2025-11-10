@@ -1,5 +1,6 @@
 package com.project.societyManagement.filter;
 
+import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.entity.User;
 import com.project.societyManagement.service.CustomUserDetailService;
 import com.project.societyManagement.util.AuthUtil;
@@ -27,6 +28,8 @@ public class JWTFilter extends OncePerRequestFilter {
     private CustomUserDetailService userDetailService;
     @Autowired
     private HandlerExceptionResolver handlerExceptionResolver;
+
+
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         try{
@@ -37,6 +40,8 @@ public class JWTFilter extends OncePerRequestFilter {
             }
             String email = util.getEmailFromToken(token);
             if (email!= null && SecurityContextHolder.getContext().getAuthentication() == null){
+                Long tenantId = util.getTenantIdFromToken(token);
+                TenantContextHolder.setCurrentTenant(tenantId);
                 User user = (User) userDetailService.loadUserByUsername(email);
              user.getAuthorities().stream().forEach(grantedAuthority -> log.info(grantedAuthority.getAuthority()) );
                 UsernamePasswordAuthenticationToken usernamePasswordAuthenticationToken =

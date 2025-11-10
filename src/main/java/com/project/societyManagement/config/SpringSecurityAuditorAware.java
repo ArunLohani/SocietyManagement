@@ -22,8 +22,15 @@ public class SpringSecurityAuditorAware implements AuditorAware<Long> {
             return Optional.empty();
         }
 
-         User user = (User) authentication.getPrincipal();
-        return Optional.of(user.getId());
+        Object principal = authentication.getPrincipal();
+        if(principal instanceof User){
+            User user = (User) authentication.getPrincipal();
+            return Optional.of(user.getId());
+        }
+
+
+        return Optional.empty();
+
 
     }
 }

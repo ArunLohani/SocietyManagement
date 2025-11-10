@@ -2,6 +2,7 @@ package com.project.societyManagement.queryBuilder.menu;
 
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.CriteriaBuilderFactory;
+import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.entity.Menu;
 import com.project.societyManagement.entity.Role;
 import com.project.societyManagement.entity.TenantRoleMenu;
@@ -66,17 +67,21 @@ public class MenuQueryBuilder extends AbstractFilterableQueryBuilder<Menu, MenuF
     @Override
     public void applyAuthorization(CriteriaBuilder<Menu> cb){
         Set<String> roles = getLoggedInUserRole();
+        if(roles.contains("SUPER_ADMIN")){
+            return;
+        }
         if (roles.contains("ADMIN")){
             return ;
         }
 
         User user = getCurrentUser();
-        Long tenantId = user.getTenant().getId();
+
         Set<Long> roleIds = user.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
 
             cb.where("m.id").in().from(TenantRoleMenu.class,"trm")
-                    .select("trm.menu.id").where("trm.tenantRoles.tenant.id").eq(tenantId)
-                    .where("trm.tenantRoles.role.id").in(roleIds).end();
+                    .select("trm.menu.id").where("trm.tenantRoles.tenant.id").eq(TenantContextHolder.getCurrentTenant())
+                    .where("trm.tenantRoles.role.id").in(roleIds)
+                    .where("trm.isActive").eq(true).end();
 
     }
 
@@ -85,7 +90,5 @@ public class MenuQueryBuilder extends AbstractFilterableQueryBuilder<Menu, MenuF
         if(filter.getId()!=null) cb.where("m.id").eq(filter.getId());
         if(filter.getName() != null) cb.where("m.name").like().value("%"+filter.getName()+"%").noEscape();
         if(filter.getDescription() != null) cb.where("m.email").like().value("%"+filter.getDescription()+"%").noEscape();
-    }
-    
-    
+        if(filter.getIsActive()!=null) cb.where("m.isActive").eq(filter.getIsActive());}
 }

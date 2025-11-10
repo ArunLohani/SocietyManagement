@@ -11,5 +11,5 @@ public class TenantRoleFilter {
     private Long tenantId;
     private Long roleId;
     private Long id;
-
+    private Boolean isActive = true;
 }

@@ -7,12 +7,23 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+
+import java.nio.file.AccessDeniedException;
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(AuthorizationDeniedException.class)
+    public ResponseEntity<ErrorResponse<Map<String,String >>> handleAccessDeniedException(AuthorizationDeniedException ex){
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatusCode.valueOf(403),"You do not have permission to perform this task.",ex.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.FORBIDDEN);
+
+    }
 
     @ExceptionHandler(UserNotFoundException.class)
     public ResponseEntity<ErrorResponse<Map<String,String >>> handleUserNotFoundException(UserNotFoundException ex){
@@ -51,7 +62,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse<String>> handleAllOtherExceptions(Exception ex){
-
+        System.out.println(ex.getStackTrace() + ex.getMessage() + ex.getCause() + ex.getClass());
         ErrorResponse errorResponse = new ErrorResponse(HttpStatus.valueOf(500),ex.getMessage(),ex.getLocalizedMessage());
 
         return new ResponseEntity<>(errorResponse,HttpStatus.INTERNAL_SERVER_ERROR);

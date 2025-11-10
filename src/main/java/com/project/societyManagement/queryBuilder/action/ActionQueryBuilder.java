@@ -66,6 +66,6 @@ public class ActionQueryBuilder extends AbstractFilterableQueryBuilder<Action, A
     @Override
     public void applyFilters(CriteriaBuilder<Action> cb,ActionFilter filter){
         if(filter.getId()!=null) cb.where("a.id").eq(filter.getId());
-        if(filter.getAction() != null) cb.where("a.action").like().value("%"+filter.getAction()+"%").noEscape();
+//        if(filter.getAction() != null) cb.where("a.action").like().value("%"+filter.getAction()+"%").noEscape();
     }
 }

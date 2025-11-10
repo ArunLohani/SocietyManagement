@@ -2,6 +2,7 @@ package com.project.societyManagement.queryBuilder.role;
 
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.CriteriaBuilderFactory;
+import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.entity.*;
 import com.project.societyManagement.queryBuilder.core.AbstractFilterableQueryBuilder;
 import jakarta.persistence.EntityManager;
@@ -27,7 +28,13 @@ public class RoleQueryBuilder extends AbstractFilterableQueryBuilder<Role, RoleF
         if(auth==null || !auth.isAuthenticated() || auth instanceof AnonymousAuthenticationToken){
             return null;
         }
-        return (User) auth.getPrincipal();
+        Object principal = auth.getPrincipal();
+        //Check if principal is actually User entity
+        if(principal instanceof User){
+            return (User) principal;
+        }
+        //During Oauth2 login, principal might be of Oauth2User
+        return null;
     }
 
     public Set<String> getLoggedInUserRole(){
@@ -61,24 +68,32 @@ public class RoleQueryBuilder extends AbstractFilterableQueryBuilder<Role, RoleF
 
     @Override
     public void applyAuthorization(CriteriaBuilder<Role> cb){
-        Set<String> roles = getLoggedInUserRole();
+            Set<String> roles = getLoggedInUserRole();
+            if(roles.contains("SUPER_ADMIN")){
+                return;
+            }
         if (roles.contains("ADMIN")){
-            return ;
+            cb
+                    .where("r.role").notEq("ADMIN")
+                    .where("r.role").notEq("SUPER_ADMIN");
+            return;
         }
+            User user = getCurrentUser();
 
-        User user = getCurrentUser();
-        Long tenantId = user.getTenant().getId();
-        Set<Long> roleIds = user.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
+        if(user!=null && user.getRoles() != null){
 
-        cb.where("r.id").in().from(TenantRoles.class,"tr")
-                .select("tr.menu.id").where("tr.tenant.id").eq(tenantId).end();
+            Set<Long> roleIds = user.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
+
+            cb.where("r.id").in().from(TenantRoles.class,"tr")
+                    .select("tr.role.id").where("tr.tenant.id").eq(TenantContextHolder.getCurrentTenant()).end();
+        }
 
     }
 
     @Override
     public void applyFilters(CriteriaBuilder<Role> cb,RoleFilter filter){
         if(filter.getId()!=null) cb.where("r.id").eq(filter.getId());
-        if(filter.getRole() != null) cb.where("r.name").eq(filter.getRole());
+        if(filter.getRole() != null) cb.where("r.role").eq(filter.getRole());
 
     }
 

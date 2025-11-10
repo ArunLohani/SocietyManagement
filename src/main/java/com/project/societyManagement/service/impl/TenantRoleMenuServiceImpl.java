@@ -8,13 +8,14 @@ import com.project.societyManagement.queryBuilder.tenantRoleMenu.TenantRoleMenuF
 import com.project.societyManagement.queryBuilder.tenantRoleMenu.TenantRoleMenuQueryBuilder;
 import com.project.societyManagement.repository.TenantRoleMenuRepo;
 import com.project.societyManagement.service.MenuService;
+import com.project.societyManagement.service.TenantRoleMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.util.List;
 @Slf4j
 @Service
-public class TenantRoleMenuServiceImpl  {
+public class TenantRoleMenuServiceImpl implements TenantRoleMenuService {
     @Autowired
     private TenantRoleMenuQueryBuilder tenantRoleMenuQueryBuilder;
     @Autowired
@@ -97,5 +98,13 @@ public class TenantRoleMenuServiceImpl  {
         filter.setMenuId(menuId);
         List<TenantRoleMenu> mappings = tenantRoleMenuQueryBuilder.search(filter);
         return !mappings.isEmpty() && mappings.get(0).isActive();
+    }
+
+    public TenantRoleMenu searchByTenantRoleAndMenu(Long tenantRoleId, Long menuId){
+        TenantRoleMenuFilter filter = new TenantRoleMenuFilter();
+        filter.setTenantRoleId(tenantRoleId);
+        filter.setMenuId(menuId);
+        TenantRoleMenu tenantRoleMenu = tenantRoleMenuQueryBuilder.findById(filter);
+        return tenantRoleMenu;
     }
 }

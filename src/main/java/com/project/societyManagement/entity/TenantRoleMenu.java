@@ -16,7 +16,8 @@ import lombok.experimental.SuperBuilder;
 @AllArgsConstructor
 @NoArgsConstructor
 @Table(name = "tenant_role_menu")
-public class TenantRoleMenu extends AuditableEntity {
+public class
+TenantRoleMenu extends AuditableEntity {
 
     @ManyToOne
     @JoinColumn(name = "tenant_role_id")

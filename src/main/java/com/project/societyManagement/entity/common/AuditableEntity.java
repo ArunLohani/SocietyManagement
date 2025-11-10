@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @MappedSuperclass
 @SuperBuilder
 @EntityListeners(AuditingEntityListener.class)
-public abstract class AuditableEntity {
+public abstract class   AuditableEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

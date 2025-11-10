@@ -11,7 +11,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/user")
@@ -24,7 +29,8 @@ public class UserController {
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse<UserDetails>> findUserById(@PathVariable Long id) {
         log.info("Request received for GET /user/id endpoint.");
-        UserDetails response = userService.findUserById(id);
+        User user = userService.findUserById(id);
+        UserDetails response =UserDetails.builder().id(user.getId()).email(user.getEmail()).name(user.getName()).roles(user.getRoles().stream().map(role -> role.getRole()).collect(Collectors.toSet())).build();
         ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "User fetched successfully", response);
         log.info("Response Generated : Login Successful");
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
@@ -44,11 +50,28 @@ public class UserController {
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UserDetails>> updateUser(@PathVariable Long id,@RequestBody User user) {
         log.info("Request received for PUT /user/id endpoint.");
-        UserDetails userToBeUpdated = userService.findUserById(id);
         UserDetails updatedUser = userService.updateUser(user);
         ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "User fetched successfully", updatedUser);
         log.info("Response Generated : Update Successful");
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
+    @GetMapping("/not-assigned")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<List<UserDetails>>> searchUser()
+    {
+        List<UserDetails> users = userService.findUsersNotAssignedToTenant();
+        ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "User fetched successfully", users);
+        return new ResponseEntity(apiResponse, HttpStatus.OK);
+    }
+
+    @GetMapping("/checkStatus")
+    public ResponseEntity<ApiResponse<Boolean>> checkUserTenantStatus(Authentication authentication)
+    {
+        Boolean status = userService.checkUserTenanStatus(authentication);
+        ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "User Tenant Status fetched successfully", status);
+        return new ResponseEntity(apiResponse, HttpStatus.OK);
+    }
+
 
 }

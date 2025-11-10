@@ -11,5 +11,6 @@ public class RoleFilter {
 
     private Long id;
     private String role;
+    private Boolean isActive = true;
 
 }

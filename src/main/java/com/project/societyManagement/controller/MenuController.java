@@ -10,7 +10,10 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/menu")
@@ -25,16 +28,25 @@ public class MenuController {
     }
 
     @GetMapping("")
-    public ResponseEntity<Page<Menu>> getAllMenu(
+    public ResponseEntity<Page<Menu>> getAllMenuPaginated(
                                         @RequestParam(defaultValue = "0") Integer page,
                                         @RequestParam(defaultValue = "6") Integer limit)
     {
         Pageable pageable = PageRequest.of(page,limit);
-        Page<Menu> userPage = menuService.searchMenu(pageable);
+        Page<Menu> userPage = menuService.searchMenuPaginated(pageable);
         return ResponseEntity.ok(userPage);
     }
 
+    @GetMapping("/getAll")
+    public ResponseEntity<Page<Menu>> getAllMenu()
+    {
+        List<Menu> menu = menuService.searchMenu();
+        ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "Menus fetched successfully", menu);
+        return new ResponseEntity(apiResponse, HttpStatus.OK);
+    }
+
     @PostMapping("")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Menu>> createMenu(@RequestBody Menu menu){
         Menu createdMenu = menuService.createMenu(menu);
         ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "User fetched successfully", createdMenu);

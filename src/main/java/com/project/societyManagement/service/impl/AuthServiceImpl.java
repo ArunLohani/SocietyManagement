@@ -80,8 +80,7 @@ public class AuthServiceImpl implements AuthService {
         registerUser.setRoles(roles);
         log.info("Encoding User's Password ");
         registerUser.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        Tenant tenant = tenantService.findTenantById(1L);
-        registerUser.setTenant(tenant);
+
         try {
             log.info("Saving user in the DB....");
             User user = userService.saveUser(registerUser);

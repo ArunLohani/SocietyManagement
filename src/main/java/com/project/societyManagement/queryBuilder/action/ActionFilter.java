@@ -10,5 +10,5 @@ import lombok.NoArgsConstructor;
 public class ActionFilter {
     private Long id;
     private String action;
-    private Boolean isActive;
+    private Boolean isActive = true;
 }
