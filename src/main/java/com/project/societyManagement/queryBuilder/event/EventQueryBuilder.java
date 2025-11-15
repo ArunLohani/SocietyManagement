@@ -1,7 +1,8 @@
-package com.project.societyManagement.queryBuilder.action;
+package com.project.societyManagement.queryBuilder.event;
 
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.CriteriaBuilderFactory;
+import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.entity.*;
 import com.project.societyManagement.queryBuilder.core.AbstractFilterableQueryBuilder;
 import jakarta.persistence.EntityManager;
@@ -16,9 +17,9 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class ActionQueryBuilder extends AbstractFilterableQueryBuilder<Action, ActionFilter> {
+public class EventQueryBuilder extends AbstractFilterableQueryBuilder<Event, EventFilter> {
 
-    ActionQueryBuilder(EntityManager entityManager , CriteriaBuilderFactory cbf){
+    EventQueryBuilder(EntityManager entityManager , CriteriaBuilderFactory cbf){
         super(entityManager,cbf);
     }
 
@@ -50,23 +51,39 @@ public class ActionQueryBuilder extends AbstractFilterableQueryBuilder<Action, A
     }
 
     @Override
-    protected Class<Action> getEntityClass() {
-        return Action.class;
+    protected Class<Event> getEntityClass() {
+        return Event.class;
     }
 
     @Override
     protected String getEntityAlias() {
-        return "a";
+        return "e";
     }
 
     @Override
-    public void applyAuthorization(CriteriaBuilder<Action> cb){
+    public void applyAuthorization(CriteriaBuilder<Event> cb){
+
+        Set<String> roles = getLoggedInUserRole();
+        if(roles.contains("SUPER_ADMIN")){
+            return;
+        }
+            cb.where("e.tenant.id").eq(TenantContextHolder.getCurrentTenant());
+
+
+
+
     }
 
     @Override
-    public void applyFilters(CriteriaBuilder<Action> cb,ActionFilter filter){
-        if(filter.getId()!=null) cb.where("a.id").eq(filter.getId());
-        if(filter.getPriority() != null) cb.where("a.priority").le(filter.getPriority());
-
+    public void applyFilters(CriteriaBuilder<Event> cb,EventFilter filter){
+        if(filter.getId()!=null) cb.where("e.id").eq(filter.getId());
+        if(filter.getName() != null) cb.where("e.name").eq(filter.getName());
+        if(filter.getDescription() != null) cb.where("e.description").eq(filter.getDescription());
+        if(filter.getStatus() != null) cb.where("e.status").eq(filter.getStatus());
+        if(filter.getLocation() != null) cb.where("e.location").eq(filter.getLocation());
+        if (filter.getOrganizedBy()!=null)cb.where("e.organizedBy.id").eq(filter.getOrganizedBy());
+        if (filter.getStartDateTime()!=null) cb.where("e.startDateTime").ge(filter.getStartDateTime());
+        if (filter.getEndDateTime()!=null)cb.where("e.endStartTime").ge(filter.getEndDateTime());
+        if (filter.getTenantId()!=null) cb.where("e.tenant.id").eq(filter.getTenantId());
     }
 }

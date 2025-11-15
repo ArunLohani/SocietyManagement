@@ -1,14 +1,10 @@
-package com.project.societyManagement.queryBuilder.menu;
+package com.project.societyManagement.queryBuilder.compaints;
 
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.CriteriaBuilderFactory;
 import com.project.societyManagement.config.TenantContextHolder;
-import com.project.societyManagement.entity.Menu;
-import com.project.societyManagement.entity.Role;
-import com.project.societyManagement.entity.TenantRoleMenu;
-import com.project.societyManagement.entity.User;
+import com.project.societyManagement.entity.*;
 import com.project.societyManagement.queryBuilder.core.AbstractFilterableQueryBuilder;
-import com.project.societyManagement.queryBuilder.user.UserFilter;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AnonymousAuthenticationToken;
@@ -21,9 +17,9 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class MenuQueryBuilder extends AbstractFilterableQueryBuilder<Menu, MenuFilter> {
+public class ComplaintsQueryBuilder extends AbstractFilterableQueryBuilder<Complaints, ComplaintsFilter> {
 
-    MenuQueryBuilder(EntityManager entityManager , CriteriaBuilderFactory cbf){
+    ComplaintsQueryBuilder(EntityManager entityManager , CriteriaBuilderFactory cbf){
         super(entityManager,cbf);
     }
 
@@ -55,41 +51,41 @@ public class MenuQueryBuilder extends AbstractFilterableQueryBuilder<Menu, MenuF
     }
 
     @Override
-    protected Class<Menu> getEntityClass() {
-        return Menu.class;
+    protected Class<Complaints> getEntityClass() {
+        return Complaints.class;
     }
 
     @Override
     protected String getEntityAlias() {
-        return "m";
+        return "c";
     }
 
     @Override
-    public void applyAuthorization(CriteriaBuilder<Menu> cb){
+    public void applyAuthorization(CriteriaBuilder<Complaints> cb){
         Set<String> roles = getLoggedInUserRole();
         if(roles.contains("SUPER_ADMIN")){
             return;
         }
         if (roles.contains("ADMIN")){
-            return ;
+            cb.where("c.tenant.id").eq(TenantContextHolder.getCurrentTenant());
+            return;
         }
-
-        User user = getCurrentUser();
-
-        Set<Long> roleIds = user.getRoles().stream().map(Role::getId).collect(Collectors.toSet());
-
-            cb.where("m.id").in().from(TenantRoleMenu.class,"trm")
-                    .select("trm.menu.id")
-                    .where("trm.tenantRoles.tenant.id").eq(TenantContextHolder.getCurrentTenant())
-                    .where("trm.tenantRoles.role.id").in(roleIds)
-                    .where("trm.isActive").eq(true).end();
-
+        cb.where("c.tenant.id").eq(TenantContextHolder.getCurrentTenant())
+                .whereOr()
+                .where("c.raisedByUser.id").eq(getCurrentUser().getId())
+                .where("c.assignedToUser.id").eq(getCurrentUser().getId());
     }
 
     @Override
-    public void applyFilters(CriteriaBuilder<Menu> cb,MenuFilter filter){
-        if(filter.getId()!=null) cb.where("m.id").eq(filter.getId());
-        if(filter.getName() != null) cb.where("m.menuName").like().value("%"+filter.getName()+"%").noEscape();
-        if(filter.getDescription() != null) cb.where("m.email").like().value("%"+filter.getDescription()+"%").noEscape();
-        if(filter.getIsActive()!=null) cb.where("m.isActive").eq(filter.getIsActive());}
+    public void applyFilters(CriteriaBuilder<Complaints> cb,ComplaintsFilter filter){
+        if(filter.getId()!=null) cb.where("c.id").eq(filter.getId());
+        if(filter.getTitle() != null) cb.where("c.title").eq(filter.getTitle());
+        if(filter.getDescription() != null) cb.where("c.description").eq(filter.getDescription());
+        if(filter.getStatus() != null) cb.where("c.status").eq(filter.getStatus());
+        if (filter.getRaisedByUser()!=null) cb.where("c.raisedByUser.id").eq(filter.getRaisedByUser());
+        if (filter.getAssignedToUser()!=null) cb.where("c.assignedToUser.id").eq(filter.getAssignedToUser());
+        if(filter.getIsActive() != null) cb.where("c.isActive").eq(filter.getIsActive());
+        if (filter.getTenantId()!=null) cb.where("c.tenant.id").eq(filter.getTenantId());
+        if (filter.getCategory()!=null) cb.where("c.category").eq(filter.getCategory());
+    }
 }

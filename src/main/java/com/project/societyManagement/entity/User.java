@@ -13,9 +13,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -65,6 +63,18 @@ public class User extends AuditableEntity implements UserDetails {
     public String getUsername() {
         return email;
     }
+
+
+    @ManyToMany(mappedBy = "participants",fetch = FetchType.LAZY)
+    private Set<Event> eventsParticipated = new HashSet<>();
+
+
+    @OneToMany(mappedBy = "raisedByUser", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<Complaints> complaintsRaised = new ArrayList<>();
+
+
+    @OneToMany(mappedBy = "assignedToUser", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+    private List<Complaints> complaintsAssigned = new ArrayList<>();
 
 
 }

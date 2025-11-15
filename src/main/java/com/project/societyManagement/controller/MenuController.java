@@ -38,7 +38,7 @@ public class MenuController {
     }
 
     @GetMapping("/getAll")
-    public ResponseEntity<Page<Menu>> getAllMenu()
+    public ResponseEntity<List<Menu>> getAllMenu()
     {
         List<Menu> menu = menuService.searchMenu();
         ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "Menus fetched successfully", menu);

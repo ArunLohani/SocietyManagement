@@ -1,4 +1,4 @@
-package com.project.societyManagement.queryBuilder.action;
+package com.project.societyManagement.queryBuilder.apiPermissionMapping;
 
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.CriteriaBuilderFactory;
@@ -10,15 +10,17 @@ import org.springframework.security.authentication.AnonymousAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
+
 import java.util.Collections;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class ActionQueryBuilder extends AbstractFilterableQueryBuilder<Action, ActionFilter> {
+public class ApiPermissionMappingQueryBuilder extends AbstractFilterableQueryBuilder<ApiPermissionMapping, ApiPermissionMappingFilter> {
 
-    ActionQueryBuilder(EntityManager entityManager , CriteriaBuilderFactory cbf){
+
+    ApiPermissionMappingQueryBuilder(EntityManager entityManager , CriteriaBuilderFactory cbf){
         super(entityManager,cbf);
     }
 
@@ -50,23 +52,26 @@ public class ActionQueryBuilder extends AbstractFilterableQueryBuilder<Action, A
     }
 
     @Override
-    protected Class<Action> getEntityClass() {
-        return Action.class;
+    protected Class<ApiPermissionMapping> getEntityClass() {
+        return ApiPermissionMapping.class;
     }
 
     @Override
     protected String getEntityAlias() {
-        return "a";
+        return "apm";
     }
 
     @Override
-    public void applyAuthorization(CriteriaBuilder<Action> cb){
+    public void applyAuthorization(CriteriaBuilder<ApiPermissionMapping> cb){
+
+
     }
 
     @Override
-    public void applyFilters(CriteriaBuilder<Action> cb,ActionFilter filter){
-        if(filter.getId()!=null) cb.where("a.id").eq(filter.getId());
-        if(filter.getPriority() != null) cb.where("a.priority").le(filter.getPriority());
+    public void applyFilters(CriteriaBuilder<ApiPermissionMapping> cb,ApiPermissionMappingFilter filter){
+        if(filter.getId()!=null) cb.where("apm.id").eq(filter.getId());
+        if(filter.getApi() != null) cb.where("apm.api").eq(filter.getApi());
+        if(filter.getIsActive()!=null) cb.where("apm.isActive").eq(filter.getIsActive());}
 
-    }
+
 }

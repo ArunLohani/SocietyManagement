@@ -13,5 +13,9 @@
     <include file="create-tenant-table-and-add-tenantId-col-to-users.xml" relativeToChangelogFile="true"/>
     <include file="adding-isActive-for-soft-delete.xml" relativeToChangelogFile="true"/>
     <include file="creating-menu-and-action-tables.xml" relativeToChangelogFile="true"/>
+    <include file="adding-priority-col-to-tenant-role-menu-and-action-table.xml" relativeToChangelogFile="true"/>
+    <include file="adding-event-table-its-connectivity-in-user-table.xml" relativeToChangelogFile="true"/>
+    <include file="create-notice-table.xml" relativeToChangelogFile="true"/>
+
 
 </databaseChangeLog>

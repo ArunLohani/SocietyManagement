@@ -2,6 +2,7 @@ package com.project.societyManagement.controller;
 
 import com.project.societyManagement.dto.Api.ApiResponse;
 import com.project.societyManagement.entity.Action;
+import com.project.societyManagement.queryBuilder.action.ActionFilter;
 import com.project.societyManagement.service.ActionService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -32,7 +33,8 @@ public class ActionController {
     @GetMapping("")
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<List<Action>>> getAllAction(){
-        List<Action> actions = actionService.getAllActions();
+        ActionFilter actionFilter = new ActionFilter();
+        List<Action> actions = actionService.getAllActions(actionFilter);
         ApiResponse<List<Action>> apiResponse = new ApiResponse<>(true,"Actions fetched Successfully",actions);
         return  ResponseEntity.ok(apiResponse);
     }

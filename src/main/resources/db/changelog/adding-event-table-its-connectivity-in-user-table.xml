@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet  id="creating-event-table"  author="Arun">
+        <sql>
+            CREATE TABLE event (
+            id BIGSERIAL PRIMARY KEY,
+            name VARCHAR(200),
+            description VARCHAR(500),
+            start_date_time TIMESTAMPTZ NOT NULL,
+            end_date_time TIMESTAMPTZ NOT NULL,
+            location VARCHAR(500),
+            tenant_id BIGINT NOTNULL,
+            organized_by BIGINT NOTNULL,
+            status VARCHAR(200) NOTNULL,
+            registration_required BOOLEAN,
+            max_participants BIGINT,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (tenant_id) REFERENCES tenant (id),
+            FOREIGN KEY (organized_by) REFERENCES user (id),
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet  id="creating_joining_table_for_event_and_user"  author="Arun">
+        <sql>
+            CREATE TABLE event_participants (
+            id BIGSERIAL PRIMARY KEY,
+            user_id BIGINT NOT NULL,
+            event_id BIGINT NOT NULL,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (user_id) REFERENCES user (id),
+            FOREIGN KEY (event_id) REFERENCES event (id),
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

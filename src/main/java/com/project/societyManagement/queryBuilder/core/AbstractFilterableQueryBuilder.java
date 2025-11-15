@@ -47,7 +47,8 @@ public abstract class AbstractFilterableQueryBuilder<T,F> implements BaseQueryBu
         cb.orderByAsc(getDefaultOrderProperty());
         int pageNumber = pageable!=null? pageable.getPageNumber() : 0;
         int pageSize = pageable!=null?pageable.getPageSize() : 6;
-        PagedList<T> resultList = cb.page(pageNumber,pageSize)
+        int offset = pageNumber * pageSize;
+        PagedList<T> resultList = cb.page(offset,pageSize)
                 .withInlineCountQuery(false)
                 .getResultList();
         return new PageImpl<>(resultList , pageable!=null? pageable : PageRequest.of(pageNumber,pageSize),resultList.getTotalSize());

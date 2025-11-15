@@ -51,6 +51,7 @@ public class TenantRoleMenuServiceImpl implements TenantRoleMenuService {
         TenantRoleMenu tenantRoleMenu = TenantRoleMenu.builder()
                 .tenantRoles(tenantRole)
                 .menu(menu)
+                .isActive(true)
                 .build();
         return tenantRoleMenuRepo.save(tenantRoleMenu);
     }

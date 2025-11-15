@@ -1,7 +1,8 @@
-package com.project.societyManagement.queryBuilder.action;
+package com.project.societyManagement.queryBuilder.notice;
 
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.CriteriaBuilderFactory;
+import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.entity.*;
 import com.project.societyManagement.queryBuilder.core.AbstractFilterableQueryBuilder;
 import jakarta.persistence.EntityManager;
@@ -16,9 +17,9 @@ import java.util.stream.Collectors;
 
 @Component
 @Slf4j
-public class ActionQueryBuilder extends AbstractFilterableQueryBuilder<Action, ActionFilter> {
+public class NoticeQueryBuilder extends AbstractFilterableQueryBuilder<Notice, NoticeFilter> {
 
-    ActionQueryBuilder(EntityManager entityManager , CriteriaBuilderFactory cbf){
+    NoticeQueryBuilder(EntityManager entityManager , CriteriaBuilderFactory cbf){
         super(entityManager,cbf);
     }
 
@@ -50,23 +51,33 @@ public class ActionQueryBuilder extends AbstractFilterableQueryBuilder<Action, A
     }
 
     @Override
-    protected Class<Action> getEntityClass() {
-        return Action.class;
+    protected Class<Notice> getEntityClass() {
+        return Notice.class;
     }
 
     @Override
     protected String getEntityAlias() {
-        return "a";
+        return "n";
     }
 
     @Override
-    public void applyAuthorization(CriteriaBuilder<Action> cb){
+    public void applyAuthorization(CriteriaBuilder<Notice> cb){
+        Set<String> roles = getLoggedInUserRole();
+        if(roles.contains("SUPER_ADMIN")){
+            return;
+        }
+        cb.where("n.tenant.id").eq(TenantContextHolder.getCurrentTenant());
     }
 
     @Override
-    public void applyFilters(CriteriaBuilder<Action> cb,ActionFilter filter){
-        if(filter.getId()!=null) cb.where("a.id").eq(filter.getId());
-        if(filter.getPriority() != null) cb.where("a.priority").le(filter.getPriority());
-
+    public void applyFilters(CriteriaBuilder<Notice> cb,NoticeFilter filter){
+        if(filter.getId()!=null) cb.where("n.id").eq(filter.getId());
+        if(filter.getTitle() != null) cb.where("n.title").eq(filter.getTitle());
+        if(filter.getMessage() != null) cb.where("n.message").eq(filter.getMessage());
+        if(filter.getIsActive() != null) cb.where("n.isActive").eq(filter.getIsActive());
+        if(filter.getIsPublic() != null) cb.where("n.isPublic").eq(filter.getIsPublic());
+        if (filter.getIsExpired()!=null)cb.where("n.isExpired").eq(filter.getIsExpired());
+        if (filter.getTenantId()!=null) cb.where("n.tenant.id").eq(filter.getTenantId());
+        if (filter.getCategory()!=null) cb.where("n.category").eq(filter.getCategory());
     }
 }

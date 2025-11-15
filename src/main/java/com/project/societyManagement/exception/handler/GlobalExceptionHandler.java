@@ -3,6 +3,7 @@ package com.project.societyManagement.exception.handler;
 import com.project.societyManagement.dto.Error.ErrorResponse;
 import com.project.societyManagement.exception.UserNotFoundException;
 import com.project.societyManagement.exception.ValidationException;
+import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +17,14 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    @ExceptionHandler(ExpiredJwtException.class)
+    public ResponseEntity<ErrorResponse<Map<String,String >>> handleExpiredJwtException(ExpiredJwtException ex){
+
+        ErrorResponse errorResponse = new ErrorResponse(HttpStatusCode.valueOf(401),"Your JWT token has been expired. Please Login again.",ex.getMessage());
+        return new ResponseEntity<>(errorResponse,HttpStatus.UNAUTHORIZED);
+
+    }
 
     @ExceptionHandler(AuthorizationDeniedException.class)
     public ResponseEntity<ErrorResponse<Map<String,String >>> handleAccessDeniedException(AuthorizationDeniedException ex){

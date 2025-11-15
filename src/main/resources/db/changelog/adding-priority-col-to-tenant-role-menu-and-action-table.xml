@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet  id="adding-priority-col-to-action-table"  author="Arun">
+        <sql>
+
+            ALTER TABLE action
+            ADD COLUMN priority INTEGER;
+        </sql>
+    </changeSet>
+
+    <changeSet  id="adding-priority-col-to-tenant-role-menu-table"  author="Arun">
+        <sql>
+
+            ALTER TABLE tenant_role_menu
+            ADD COLUMN priority INTEGER DEFAULT 0;
+        </sql>
+    </changeSet>
+
+    <changeSet  id="creating-api-permission-mapping-table"  author="Arun">
+        <sql>
+
+            CREATE TABLE api_permission_mapping (
+            id BIGSERIAL PRIMARY KEY,
+            api VARCHAR(200),
+            action_id BIGINT NOT NULL,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (action_id) REFERENCES action (id)
+            );
+        </sql>
+    </changeSet>
+
+
+</databaseChangeLog>

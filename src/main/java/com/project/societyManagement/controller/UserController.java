@@ -1,5 +1,6 @@
 package com.project.societyManagement.controller;
 
+import com.project.societyManagement.annotations.RequiresPermission;
 import com.project.societyManagement.dto.Api.ApiResponse;
 import com.project.societyManagement.dto.User.UserDetails;
 import com.project.societyManagement.entity.User;
@@ -14,7 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -27,6 +27,7 @@ public class UserController {
     private UserService userService;
 
     @GetMapping("/{id}")
+    @RequiresPermission(api = "CREATE_USER")
     public ResponseEntity<ApiResponse<UserDetails>> findUserById(@PathVariable Long id) {
         log.info("Request received for GET /user/id endpoint.");
         User user = userService.findUserById(id);
@@ -37,7 +38,7 @@ public class UserController {
     }
 
     @GetMapping("/search")
-    public ResponseEntity<?> searchUser(@RequestParam(required = false) String name,
+    public ResponseEntity<Page<User>> searchUser(@RequestParam(required = false) String name,
                                         @RequestParam(required = false) String email,
                                         @RequestParam(defaultValue = "0") Integer page,
                                         @RequestParam(defaultValue = "6") Integer limit)
@@ -72,6 +73,4 @@ public class UserController {
         ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "User Tenant Status fetched successfully", status);
         return new ResponseEntity(apiResponse, HttpStatus.OK);
     }
-
-
 }

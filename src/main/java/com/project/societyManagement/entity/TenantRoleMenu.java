@@ -26,4 +26,6 @@ TenantRoleMenu extends AuditableEntity {
     @ManyToOne
     @JoinColumn(name = "menu_id")
     private Menu menu;
+
+    private int priority;
 }

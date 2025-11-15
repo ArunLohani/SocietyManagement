@@ -41,8 +41,8 @@ public class ActionServiceImpl implements ActionService {
     }
 
     @Override
-    public List<Action> getAllActions(){
-        ActionFilter actionFilter = new ActionFilter();
+    public List<Action> getAllActions(ActionFilter actionFilter){
+
         List<Action> actions = actionQueryBuilder.search(actionFilter);
         return actions;
     }

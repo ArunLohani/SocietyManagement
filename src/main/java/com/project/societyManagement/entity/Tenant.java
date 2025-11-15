@@ -27,4 +27,10 @@ public class Tenant extends AuditableEntity {
     @JsonIgnore
     List<User> residents;
 
+    @OneToMany(mappedBy = "tenant" , cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Event> events;
+
+    @OneToMany(mappedBy = "tenant" , cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Notice> notices;
+
 }
