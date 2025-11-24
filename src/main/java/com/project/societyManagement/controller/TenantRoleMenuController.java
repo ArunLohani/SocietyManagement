@@ -12,7 +12,6 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/tenantRoleMenu")
-@PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
 public class TenantRoleMenuController {
     @Autowired
     private TenantRoleMenuService tenantRoleMenuService;
@@ -70,6 +69,24 @@ public class TenantRoleMenuController {
                 "Access checked successfully", hasAccess);
         return ResponseEntity.ok(response);
     }
+
+    @GetMapping("/canAccess")
+    public ResponseEntity<ApiResponse<Boolean>> canAccess(
+            @RequestParam String menu) {
+        boolean hasAccess = tenantRoleMenuService.canAccess(menu);
+        ApiResponse<Boolean> response = new ApiResponse<>(true,
+                "Access checked successfully", hasAccess);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping("/getPriority/{menu}")
+    public ResponseEntity<ApiResponse<Integer>> getPriorityOfMenu(@PathVariable String menu){
+        Integer priority = tenantRoleMenuService.getUserPriorityOnMenu(menu);
+        ApiResponse<Integer> response = new ApiResponse<>(true,
+                "Priority fetched successfully", priority);
+        return ResponseEntity.ok(response);
+    }
+
 }
 
 

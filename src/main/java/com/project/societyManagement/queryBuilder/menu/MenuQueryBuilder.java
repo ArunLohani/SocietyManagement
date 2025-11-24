@@ -89,7 +89,7 @@ public class MenuQueryBuilder extends AbstractFilterableQueryBuilder<Menu, MenuF
     @Override
     public void applyFilters(CriteriaBuilder<Menu> cb,MenuFilter filter){
         if(filter.getId()!=null) cb.where("m.id").eq(filter.getId());
-        if(filter.getName() != null) cb.where("m.menuName").like().value("%"+filter.getName()+"%").noEscape();
-        if(filter.getDescription() != null) cb.where("m.email").like().value("%"+filter.getDescription()+"%").noEscape();
+        if(filter.getName() != null) cb.where("upper(m.menuName)").like().value("%"+filter.getName().toUpperCase()+"%").noEscape();
+        if(filter.getDescription() != null) cb.where("m.description").like().value("%"+filter.getDescription()+"%").noEscape();
         if(filter.getIsActive()!=null) cb.where("m.isActive").eq(filter.getIsActive());}
 }

@@ -50,6 +50,11 @@ public class NoticeServiceImpl implements NoticeService {
         return noticeRepository.save(notice);
     }
 
+    public Notice deleteNotice(Long noticeId){
+        Notice notice = getNoticeById(noticeId);
+        notice.setActive(false);
+        return noticeRepository.save(notice);
+    }
     public Notice togglePublicStatus(Long noticeId){
         Notice notice = getNoticeById(noticeId);
         notice.setIsPublic(!notice.getIsPublic());

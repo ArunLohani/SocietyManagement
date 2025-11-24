@@ -21,7 +21,7 @@
             id BIGSERIAL PRIMARY KEY,
             title VARCHAR(200),
             message VARCHAR(500),
-            tenant_id BIGINT NOTNULL,
+            tenant_id BIGINT NOT NULL,
             is_public BOOLEAN,
             is_expired BOOLEAN,
             category VARCHAR(200),
@@ -30,8 +30,15 @@
             updated_by BIGINT,
             updated_at TIMESTAMPTZ,
             is_active BOOLEAN DEFAULT TRUE,
-            FOREIGN KEY (tenant_id) REFERENCES tenant (id),
+            FOREIGN KEY (tenant_id) REFERENCES tenant (id)
             );
+        </sql>
+    </changeSet>
+
+    <changeSet  id="adding-priority-to-notice-table"  author="Arun">
+        <sql>
+            ALTER TABLE notice
+            ADD COLUMN priority VARCHAR(200);
         </sql>
     </changeSet>
 </databaseChangeLog>

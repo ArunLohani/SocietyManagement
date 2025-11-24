@@ -1,4 +1,4 @@
-package com.project.societyManagement.dto.Event;
+package com.project.societyManagement.dto.ParkingSlot;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventParticipationRequest {
-    Long eventId;
-    Long userId;
+public class ParkingBookingRequestDto {
+    Long parkingSlotId ;
+    Long vehicleId;
 }

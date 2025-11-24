@@ -8,15 +8,18 @@ import com.project.societyManagement.queryBuilder.tenantRoleMenu.TenantRoleMenuQ
 import com.project.societyManagement.queryBuilder.tenantRoleMenuAction.TenantRoleMenuActionFilter;
 import com.project.societyManagement.queryBuilder.tenantRoleMenuAction.TenantRoleMenuActionQueryBuilder;
 import com.project.societyManagement.repository.TenantRoleMenuActionRepo;
+import com.project.societyManagement.repository.TenantRoleMenuRepo;
 import com.project.societyManagement.service.ActionService;
 import com.project.societyManagement.service.TenantRoleMenuActionService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
+import org.springframework.security.access.AccessDeniedException;
 
+import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -26,10 +29,12 @@ public class TenantRoleMenuActionServiceImpl implements TenantRoleMenuActionServ
     private final TenantRoleMenuActionQueryBuilder tenantRoleMenuActionQueryBuilder;
     private final TenantRoleMenuQueryBuilder tenantRoleMenuQueryBuilder;
     private final TenantRoleMenuActionRepo tenantRoleMenuActionRepo;
+    private final TenantRoleMenuRepo tenantRoleMenuRepo; // <--- new
     private final ActionService actionService;
 
     /**
      * Assigns an action (and all lower-priority actions) to a TenantRoleMenu.
+     * Updates TenantRoleMenu.priority to the highest active action priority.
      */
     @Override
     @Transactional
@@ -39,12 +44,12 @@ public class TenantRoleMenuActionServiceImpl implements TenantRoleMenuActionServ
         TenantRoleMenu tenantRoleMenu = getTenantRoleMenu(tenantRoleMenuId);
         Action targetAction = actionService.findById(actionId);
 
-        // Adjust menu priority if needed
-        if (tenantRoleMenu.getPriority() < targetAction.getPriority()) {
-            tenantRoleMenu.setPriority(targetAction.getPriority());
-        }
 
-        // Fetch all actions with <= target priority
+        int newMenuPriority = Math.max(tenantRoleMenu.getPriority(),
+                targetAction.getPriority());
+        tenantRoleMenu.setPriority(newMenuPriority);
+
+        // Fetch all actions with priority <= target priority to assign them (inclusive)
         ActionFilter actionFilter = new ActionFilter();
         actionFilter.setPriority(targetAction.getPriority());
         List<Action> eligibleActions = actionService.getAllActions(actionFilter);
@@ -54,11 +59,14 @@ public class TenantRoleMenuActionServiceImpl implements TenantRoleMenuActionServ
             lastAssigned = assignSingleActionIfMissing(tenantRoleMenu, action);
         }
 
+        // Persist possible tenantRoleMenu priority change
+        tenantRoleMenuRepo.save(tenantRoleMenu);
+
         return lastAssigned;
     }
 
     /**
-     * Removes an action mapping if no higher-priority actions exist.
+     * Removes an action mapping and recomputes TenantRoleMenu.priority from remaining active actions.
      */
     @Override
     @Transactional
@@ -67,16 +75,35 @@ public class TenantRoleMenuActionServiceImpl implements TenantRoleMenuActionServ
 
         TenantRoleMenuAction tenantRoleMenuAction = findExistingMapping(tenantRoleMenuId, actionId);
 
-        int menuPriority = tenantRoleMenuAction.getTenantRoleMenu().getPriority();
-        int actionPriority = tenantRoleMenuAction.getAction().getPriority();
+        Action actionToRemove = tenantRoleMenuAction.getAction();
 
-        if (menuPriority > actionPriority) {
-            throw new UserNotFoundException("Cannot disable a lower-priority action while higher priority exists.");
+        if (actionToRemove != null && "READ".equalsIgnoreCase(actionToRemove.getAction().toString())){
+                throw new IllegalStateException("READ Action is mandatory and cannot be designed from menu.");
         }
 
-        tenantRoleMenuAction.setActive(false);
+        // Deactivate the mapping
+        tenantRoleMenuAction.setIsActive(false);
         tenantRoleMenuActionRepo.save(tenantRoleMenuAction);
-        log.info("Action {} removed from tenant role menu {}", actionId, tenantRoleMenuId);
+        log.info("Action {} deactivated for tenant role menu {}", actionId, tenantRoleMenuId);
+
+        // Recompute maximum priority among remaining active actions for this tenantRoleMenu
+        TenantRoleMenu tenantRoleMenu = tenantRoleMenuAction.getTenantRoleMenu();
+        TenantRoleMenuActionFilter filter = new TenantRoleMenuActionFilter();
+        filter.setTenantRoleMenuId(tenantRoleMenu.getId());
+
+        List<TenantRoleMenuAction> remaining = tenantRoleMenuActionQueryBuilder.search(filter);
+
+        // Filter active actions and compute max priority; treat null as 0
+        Optional<Integer> maxPriorityOpt = remaining.stream()
+                .filter(TenantRoleMenuAction::getIsActive)
+                .map(trmAction -> trmAction.getAction() != null ? trmAction.getAction().getPriority() : 0)
+                .max(Comparator.naturalOrder());
+
+        int recomputedPriority = maxPriorityOpt.orElse(0);
+        tenantRoleMenu.setPriority(recomputedPriority);
+        tenantRoleMenuRepo.save(tenantRoleMenu);
+
+        log.info("TenantRoleMenu {} priority recomputed to {}", tenantRoleMenu.getId(), recomputedPriority);
     }
 
     /**
@@ -109,7 +136,7 @@ public class TenantRoleMenuActionServiceImpl implements TenantRoleMenuActionServ
         filter.setTenantRoleMenuId(tenantRoleMenuId);
         filter.setActionId(actionId);
         List<TenantRoleMenuAction> mappings = tenantRoleMenuActionQueryBuilder.search(filter);
-        return !mappings.isEmpty() && mappings.get(0).isActive();
+        return !mappings.isEmpty() && mappings.get(0).getIsActive();
     }
 
     @Override
@@ -120,7 +147,7 @@ public class TenantRoleMenuActionServiceImpl implements TenantRoleMenuActionServ
         return tenantRoleMenuActionQueryBuilder.findById(filter);
     }
 
-    // -------------------- 🔒 Private Helpers --------------------
+    // -------------------- :lock: Private Helpers --------------------
 
     private TenantRoleMenu getTenantRoleMenu(Long id) {
         TenantRoleMenuFilter filter = new TenantRoleMenuFilter();
@@ -148,8 +175,8 @@ public class TenantRoleMenuActionServiceImpl implements TenantRoleMenuActionServ
 
         if (!existing.isEmpty()) {
             TenantRoleMenuAction existingMapping = existing.get(0);
-            if (!existingMapping.isActive()) {
-                existingMapping.setActive(true);
+            if (!existingMapping.getIsActive()) {
+                existingMapping.setIsActive(true);
                 return tenantRoleMenuActionRepo.save(existingMapping);
             }
             return existingMapping;

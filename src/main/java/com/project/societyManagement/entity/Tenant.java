@@ -8,6 +8,7 @@ import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.apache.commons.lang3.builder.ToStringExclude;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -25,12 +26,22 @@ public class Tenant extends AuditableEntity {
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     @JsonIgnore
-    List<User> residents;
+    List<User> residents = new ArrayList<>();
 
     @OneToMany(mappedBy = "tenant" , cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Event> events;
+    @JsonIgnore
+    private List<Event> events = new ArrayList<>();
 
     @OneToMany(mappedBy = "tenant" , cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    private List<Notice> notices;
+    @JsonIgnore
+    private List<Notice> notices = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tenant" , cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Notice> parkingSlots = new ArrayList<>();
+
+    @OneToMany(mappedBy = "tenant" , cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Facility> facilities = new ArrayList<>();
 
 }

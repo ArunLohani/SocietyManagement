@@ -7,8 +7,8 @@ import com.project.societyManagement.entity.Tenant;
 import com.project.societyManagement.entity.User;
 import com.project.societyManagement.entity.types.ComplaintStatus;
 import com.project.societyManagement.entity.types.Priority;
-import com.project.societyManagement.queryBuilder.compaints.ComplaintsFilter;
-import com.project.societyManagement.queryBuilder.compaints.ComplaintsQueryBuilder;
+import com.project.societyManagement.queryBuilder.complaints.ComplaintsFilter;
+import com.project.societyManagement.queryBuilder.complaints.ComplaintsQueryBuilder;
 import com.project.societyManagement.repository.ComplaintsRepo;
 import com.project.societyManagement.service.ComplaintsService;
 import com.project.societyManagement.service.TenantService;
@@ -45,6 +45,21 @@ public class ComplaintsServiceImpl implements ComplaintsService {
         complaint.setPriority(Priority.valueOf(complaintRequest.getPriority()));
         complaint = complaintsRepo.save(complaint);
         return complaint;
+    }
+
+    public Complaints updateComplaint(Long complaintId,ComplaintIssuingRequest complaintRequest){
+            Complaints complaints = getComplaintById(complaintId);
+            complaints.setTitle(complaintRequest.getTitle());
+            complaints.setDescription(complaintRequest.getDescription());
+            complaints.setCategory(complaintRequest.getCategory());
+            complaints.setPriority(Priority.valueOf(complaintRequest.getPriority()));
+            return complaintsRepo.save(complaints);
+    }
+
+    public Complaints deleteComplaint(Long complaintId){
+        Complaints complaints = getComplaintById(complaintId);
+        complaints.setIsActive(false);
+        return complaintsRepo.save(complaints);
     }
 
     public Complaints assignComplaint(Long complaintId, Long userId) {

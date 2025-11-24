@@ -1,5 +1,7 @@
 package com.project.societyManagement.entity;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.societyManagement.entity.common.AuditableEntity;
 import com.project.societyManagement.entity.types.EventStatus;
 import jakarta.persistence.*;
@@ -30,18 +32,21 @@ public class Event extends AuditableEntity {
     private String location;
     @Enumerated(EnumType.STRING)
     private EventStatus status = EventStatus.PUBLISHED;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tenant_id")
+    @JsonIgnore
     private Tenant tenant;
     @ManyToOne
     @JoinColumn(name = "organized_by")
-    private User OrganizedBy;
+    @JsonBackReference
+    private User organizedBy;
     @Column(name = "registration_required")
     private Boolean registrationRequired;
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(name = "event_participants",
     joinColumns = @JoinColumn(name = "event_id"),
     inverseJoinColumns = @JoinColumn(name = "user_id"))
+    @JsonIgnore
     private List<User> participants;
     @Column(name = "max_participants")
     private Integer maxParticipants = Integer.MAX_VALUE;

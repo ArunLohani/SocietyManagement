@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet  id="creating-parking_slot-table"  author="Arun">
+        <sql>
+            CREATE TABLE parking_slot (
+            id BIGSERIAL PRIMARY KEY,
+            area VARCHAR(200),
+            slot_number VARCHAR(200),
+            status VARCHAR(200),
+            user_id BIGINT,
+            tenant_id BIGINT,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (tenant_id) REFERENCES tenant (id),
+            FOREIGN KEY (user_id) REFERENCES user (id)
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet  id="creating-vehicle-table"  author="Arun">
+        <sql>
+            CREATE TABLE vehicles (
+            id BIGSERIAL PRIMARY KEY,
+            registrationNumber VARCHAR(200) NOT NULL UNIQUE,
+            vehicleType VARCHAR(200),
+            brand VARCHAR(200),
+            model VARCHAR(200),
+            owner_id BIGINT NOT NULL,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (owner_id) REFERENCES user (id)
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="creating-parking-request-table" author="Arun">
+        <sql>
+            CREATE TABLE parking_requests (
+            id BIGSERIAL PRIMARY KEY,
+            user_id BIGINT,
+            requested_slot_id BIGINT,
+            status VARCHAR(200),
+            adminComment VARCHAR(500)
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (user_id) REFERENCES user (id),
+            FOREIGN KEY (requested_slot_id) REFERENCES parking_slot (id)
+            );
+
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

@@ -3,6 +3,7 @@ package com.project.societyManagement.queryBuilder.action;
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.CriteriaBuilderFactory;
 import com.project.societyManagement.entity.*;
+import com.project.societyManagement.entity.types.Actions;
 import com.project.societyManagement.queryBuilder.core.AbstractFilterableQueryBuilder;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -67,6 +68,6 @@ public class ActionQueryBuilder extends AbstractFilterableQueryBuilder<Action, A
     public void applyFilters(CriteriaBuilder<Action> cb,ActionFilter filter){
         if(filter.getId()!=null) cb.where("a.id").eq(filter.getId());
         if(filter.getPriority() != null) cb.where("a.priority").le(filter.getPriority());
-
+        if (filter.getAction()!=null)cb.where("a.action").eq(Actions.valueOf(filter.getAction()));
     }
 }

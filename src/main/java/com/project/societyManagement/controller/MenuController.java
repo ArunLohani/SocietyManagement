@@ -46,7 +46,6 @@ public class MenuController {
     }
 
     @PostMapping("")
-    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Menu>> createMenu(@RequestBody Menu menu){
         Menu createdMenu = menuService.createMenu(menu);
         ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "User fetched successfully", createdMenu);

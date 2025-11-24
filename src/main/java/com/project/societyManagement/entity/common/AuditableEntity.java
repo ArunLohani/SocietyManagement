@@ -43,5 +43,5 @@ public abstract class   AuditableEntity {
     private Long updatedBy;
 
     @Column(name = "is_active")
-    private boolean isActive = true;
+    private Boolean isActive = true;
 }

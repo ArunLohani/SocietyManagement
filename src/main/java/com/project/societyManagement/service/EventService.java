@@ -15,11 +15,12 @@ import java.util.List;
 import java.util.Set;
 
     public interface EventService {
-
+        public EventResponse updateEvent(Long eventId,EventCreationRequest eventRequest);
     public EventResponse createEvent(EventCreationRequest eventRequest);
     public void deleteEvent(Long eventId);
     public Event getEventById(Long eventId);
     public Page<Event> getEventsBySociety(Long tenantId , Pageable pageable);
+        public Page<Event> getEventsByMySociety(Pageable pageable);
     public Page<Event> searchEventsPaginated(EventFilter eventFilter,Pageable pageable);
     public String addParticipant(Long eventId , Long userId);
     public String takeParticipation(Long eventId);

@@ -70,4 +70,6 @@ public class TenantRoleMenuActionController {
                 "Access checked successfully", hasAccess);
         return ResponseEntity.ok(response);
     }
+
+
 }

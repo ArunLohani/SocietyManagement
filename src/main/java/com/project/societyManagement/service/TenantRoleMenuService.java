@@ -17,4 +17,6 @@ public interface TenantRoleMenuService {
     public TenantRoleMenu findById(Long id);
     public boolean hasMenuAccess(Long tenantRoleId, Long menuId);
     public TenantRoleMenu searchByTenantRoleAndMenu(Long tenantRoleId, Long menuId);
+    public boolean canAccess(String menu);
+    public int getUserPriorityOnMenu(String menuName);
 }

@@ -1,10 +1,8 @@
-package com.project.societyManagement.queryBuilder.compaints;
+package com.project.societyManagement.queryBuilder.complaints;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.time.LocalDateTime;
 
 @Data
 @NoArgsConstructor
@@ -19,4 +17,5 @@ public class ComplaintsFilter {
     private Boolean isActive = true;
     private Long tenantId;
     private String status;
+    private String priority;
 }

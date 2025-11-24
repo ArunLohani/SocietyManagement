@@ -16,6 +16,8 @@
     <include file="adding-priority-col-to-tenant-role-menu-and-action-table.xml" relativeToChangelogFile="true"/>
     <include file="adding-event-table-its-connectivity-in-user-table.xml" relativeToChangelogFile="true"/>
     <include file="create-notice-table.xml" relativeToChangelogFile="true"/>
+    <include file="create-complaints-table.xml" relativeToChangelogFile="true"/>
+    <include file="create-vehicle-and-parking-slot-table.xml" relativeToChangelogFile="true"/>
 
 
 </databaseChangeLog>

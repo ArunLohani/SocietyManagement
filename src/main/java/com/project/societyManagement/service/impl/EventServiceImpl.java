@@ -44,11 +44,25 @@ public class EventServiceImpl implements EventService {
         return modelMapper.map(eventQueryBuilder,EventResponse.class);
     }
 
+    public EventResponse updateEvent(Long eventId,EventCreationRequest eventRequest){
+        Event event = getEventById(eventId);
+        event.setName(eventRequest.getName());
+        event.setDescription(eventRequest.getDescription());
+        event.setLocation(eventRequest.getLocation());
+        event.setStatus(eventRequest.getStatus());
+        event.setStartDateTime(eventRequest.getStartDateTime());
+        event.setEndDateTime(eventRequest.getEndDateTime());
+        event.setMaxParticipants(eventRequest.getMaxParticipants());
+        event.setRegistrationRequired(eventRequest.getRegistrationRequired());
+        event = eventRepository.save(event);
+        return modelMapper.map(eventQueryBuilder,EventResponse.class);
+    }
+
     public void deleteEvent(Long eventId){
         EventFilter eventFilter = new EventFilter();
         eventFilter.setId(eventId);
         Event event = eventQueryBuilder.findById(eventFilter);
-        event.setActive(false);
+        event.setIsActive(false);
         eventRepository.save(event);
     }
 
@@ -62,6 +76,14 @@ public class EventServiceImpl implements EventService {
     public Page<Event> getEventsBySociety(Long tenantId , Pageable pageable){
         EventFilter eventFilter = new EventFilter();
         eventFilter.setTenantId(tenantId);
+        Page<Event> events = eventQueryBuilder.searchPaginated(eventFilter,pageable);
+        return events;
+    }
+
+    @Override
+    public Page<Event> getEventsByMySociety(Pageable pageable) {
+        EventFilter eventFilter = new EventFilter();
+        eventFilter.setTenantId(TenantContextHolder.getCurrentTenant());
         Page<Event> events = eventQueryBuilder.searchPaginated(eventFilter,pageable);
         return events;
     }

@@ -4,6 +4,7 @@ import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.CriteriaBuilderFactory;
 import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.entity.*;
+import com.project.societyManagement.entity.types.EventStatus;
 import com.project.societyManagement.queryBuilder.core.AbstractFilterableQueryBuilder;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -69,18 +70,15 @@ public class EventQueryBuilder extends AbstractFilterableQueryBuilder<Event, Eve
         }
             cb.where("e.tenant.id").eq(TenantContextHolder.getCurrentTenant());
 
-
-
-
     }
 
     @Override
     public void applyFilters(CriteriaBuilder<Event> cb,EventFilter filter){
         if(filter.getId()!=null) cb.where("e.id").eq(filter.getId());
-        if(filter.getName() != null) cb.where("e.name").eq(filter.getName());
+        if(filter.getName() != null) cb.where("e.name").like().value("%" + filter.getName() + "%");
         if(filter.getDescription() != null) cb.where("e.description").eq(filter.getDescription());
-        if(filter.getStatus() != null) cb.where("e.status").eq(filter.getStatus());
-        if(filter.getLocation() != null) cb.where("e.location").eq(filter.getLocation());
+        if(filter.getStatus() != null) cb.where("e.status").eq(EventStatus.valueOf(filter.getStatus()));
+        if(filter.getLocation() != null) cb.where("e.location").like().value("%" + filter.getLocation() + "%").noEscape();
         if (filter.getOrganizedBy()!=null)cb.where("e.organizedBy.id").eq(filter.getOrganizedBy());
         if (filter.getStartDateTime()!=null) cb.where("e.startDateTime").ge(filter.getStartDateTime());
         if (filter.getEndDateTime()!=null)cb.where("e.endStartTime").ge(filter.getEndDateTime());

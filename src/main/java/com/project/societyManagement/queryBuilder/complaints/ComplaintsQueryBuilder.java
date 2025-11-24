@@ -1,9 +1,11 @@
-package com.project.societyManagement.queryBuilder.compaints;
+package com.project.societyManagement.queryBuilder.complaints;
 
 import com.blazebit.persistence.CriteriaBuilder;
 import com.blazebit.persistence.CriteriaBuilderFactory;
 import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.entity.*;
+import com.project.societyManagement.entity.types.ComplaintStatus;
+import com.project.societyManagement.entity.types.Priority;
 import com.project.societyManagement.queryBuilder.core.AbstractFilterableQueryBuilder;
 import jakarta.persistence.EntityManager;
 import lombok.extern.slf4j.Slf4j;
@@ -73,7 +75,7 @@ public class ComplaintsQueryBuilder extends AbstractFilterableQueryBuilder<Compl
         cb.where("c.tenant.id").eq(TenantContextHolder.getCurrentTenant())
                 .whereOr()
                 .where("c.raisedByUser.id").eq(getCurrentUser().getId())
-                .where("c.assignedToUser.id").eq(getCurrentUser().getId());
+                .where("c.assignedToUser.id").eq(getCurrentUser().getId()).endOr();
     }
 
     @Override
@@ -81,11 +83,12 @@ public class ComplaintsQueryBuilder extends AbstractFilterableQueryBuilder<Compl
         if(filter.getId()!=null) cb.where("c.id").eq(filter.getId());
         if(filter.getTitle() != null) cb.where("c.title").eq(filter.getTitle());
         if(filter.getDescription() != null) cb.where("c.description").eq(filter.getDescription());
-        if(filter.getStatus() != null) cb.where("c.status").eq(filter.getStatus());
+        if(filter.getStatus() != null) cb.where("c.status").eq(ComplaintStatus.valueOf(filter.getStatus()));
         if (filter.getRaisedByUser()!=null) cb.where("c.raisedByUser.id").eq(filter.getRaisedByUser());
         if (filter.getAssignedToUser()!=null) cb.where("c.assignedToUser.id").eq(filter.getAssignedToUser());
         if(filter.getIsActive() != null) cb.where("c.isActive").eq(filter.getIsActive());
         if (filter.getTenantId()!=null) cb.where("c.tenant.id").eq(filter.getTenantId());
         if (filter.getCategory()!=null) cb.where("c.category").eq(filter.getCategory());
+        if (filter.getPriority()!=null) cb.where("c.priority").eq(Priority.valueOf(filter.getPriority()));
     }
 }

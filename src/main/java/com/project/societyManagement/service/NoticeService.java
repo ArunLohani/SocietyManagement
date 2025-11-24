@@ -10,6 +10,7 @@ public interface NoticeService {
     public Notice createNotice(NoticeCreationRequest noticeRequest);
     public Notice getNoticeById(Long noticeId);
     public Notice updateNotice(Long noticeId , NoticeCreationRequest noticeCreationRequest);
+    public Notice deleteNotice(Long noticeId);
     public Notice togglePublicStatus(Long noticeId);
     public Notice toggleExpiryStatus(Long noticeId);
     public Page<Notice> getNoticesForTenant(Long tenantId , Pageable pageable);

@@ -1,5 +1,6 @@
 package com.project.societyManagement.controller;
 
+import com.project.societyManagement.annotations.RequiresPermission;
 import com.project.societyManagement.dto.Api.ApiResponse;
 import com.project.societyManagement.dto.Event.EventCreationRequest;
 import com.project.societyManagement.dto.Event.EventResponse;
@@ -24,6 +25,32 @@ public class EventController {
 
     private final EventService eventService;
 
+    @GetMapping("/tenant/me")
+    public ResponseEntity<ApiResponse<Page<Event>>> getEventsForMySociety(
+            @RequestParam(defaultValue = "0") Integer pageNumber,
+            @RequestParam(defaultValue = "6") Integer pageSize) {
+        Pageable pageable = PageRequest.of(pageNumber, pageSize);
+        Page<Event> events = eventService.getEventsByMySociety(pageable);
+        return ResponseEntity.ok(new ApiResponse<>(true, "Events fetched successfully", events));
+    }
+
+    @RequiresPermission(api = "EDIT_EVENTS")
+    @PutMapping("/{eventId}")
+    public ResponseEntity<ApiResponse<EventResponse>> updateEvent(@PathVariable Long eventId,@RequestBody EventCreationRequest eventRequest) {
+        EventResponse event = eventService.updateEvent(eventId,eventRequest);
+        return new ResponseEntity<>(
+                new ApiResponse<>(true, "Event created successfully", event),
+                HttpStatus.CREATED
+        );
+    }
+    @DeleteMapping("/{eventId}")
+    public ResponseEntity<ApiResponse<String>> deleteEvent(@PathVariable Long eventId) {
+        eventService.deleteEvent(eventId);
+        return new ResponseEntity<>(
+                new ApiResponse<>(true, "Event deleted successfully", "Event deleted Successfully"),
+                HttpStatus.CREATED
+        );
+    }
     @PostMapping
     public ResponseEntity<ApiResponse<EventResponse>> createEvent(@RequestBody EventCreationRequest eventRequest) {
         EventResponse event = eventService.createEvent(eventRequest);

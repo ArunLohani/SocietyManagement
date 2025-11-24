@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet  id="creating-complaints-table"  author="Arun">
+        <sql>
+            CREATE TABLE complaints (
+            id BIGSERIAL PRIMARY KEY,
+            title VARCHAR(200),
+            description VARCHAR(500),
+            category VARCHAR(200),
+            tenant_id BIGINT NOT NULL,
+            raised_by BIGINT NOT NULL,
+            assigned_to BIGINT,
+            status VARCHAR(200),
+            priority VARCHAR(200),
+            resolution_notes VARCHAR(500),
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (tenant_id) REFERENCES tenant (id),
+            FOREIGN KEY (assigned_to) REFERENCES users(id),
+            FOREIGN KEY (raised_by) REFERENCES users(id)
+            );
+        </sql>
+    </changeSet>
+</databaseChangeLog>

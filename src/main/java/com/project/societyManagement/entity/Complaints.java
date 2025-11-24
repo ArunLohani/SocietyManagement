@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "complaints")
+    @Table(name = "complaints")
 public class Complaints extends AuditableEntity {
 
     private String title;
@@ -29,6 +29,7 @@ public class Complaints extends AuditableEntity {
     @ManyToOne
     @JoinColumn(name = "assigned_to")
     private User assignedToUser;
+    @Enumerated(EnumType.STRING)
     private ComplaintStatus status = ComplaintStatus.OPEN;
     @Enumerated(EnumType.STRING)
     private Priority priority;

@@ -3,7 +3,7 @@ package com.project.societyManagement.controller;
 import com.project.societyManagement.dto.Api.ApiResponse;
 import com.project.societyManagement.dto.Complaints.ComplaintIssuingRequest;
 import com.project.societyManagement.entity.Complaints;
-import com.project.societyManagement.queryBuilder.compaints.ComplaintsFilter;
+import com.project.societyManagement.queryBuilder.complaints.ComplaintsFilter;
 import com.project.societyManagement.service.ComplaintsService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -30,6 +30,28 @@ public class ComplaintsController {
                 HttpStatus.CREATED
         );
     }
+
+    @PutMapping("/{complaintId}")
+    public ResponseEntity<ApiResponse<Complaints>> updateComplaint(@PathVariable Long complaintId,
+            @RequestBody ComplaintIssuingRequest complaintRequest) {
+
+        Complaints complaint = complaintsService.updateComplaint(complaintId,complaintRequest);
+        return new ResponseEntity<>(
+                new ApiResponse<>(true, "Complaint updated successfully", complaint),
+                HttpStatus.CREATED
+        );
+    }
+
+    @DeleteMapping("/{complaintId}")
+    public ResponseEntity<ApiResponse<Complaints>> deleteComplaint(@PathVariable Long complaintId) {
+
+        Complaints complaint = complaintsService.deleteComplaint(complaintId);
+        return new ResponseEntity<>(
+                new ApiResponse<>(true, "Complaint deleted successfully", complaint),
+                HttpStatus.CREATED
+        );
+    }
+
 
     @GetMapping("/{complaintId}")
     public ResponseEntity<ApiResponse<Complaints>> getComplaintById(@PathVariable Long complaintId) {
