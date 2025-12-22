@@ -36,11 +36,13 @@ public class PermissionServiceImpl implements PermissionService {
 
         String menuName;
         try {
-            menuName = api.split("_")[1];
+            String[] parts = api.split("_", 2);
+            menuName = parts[1].replace("_", " ");
         } catch (Exception e) {
             log.error("Invalid API format '{}', expected format ACTION_MENU", api);
             return false;
         }
+
 
         log.info("Checking permission for API: {} (Menu: {})", api, menuName);
 

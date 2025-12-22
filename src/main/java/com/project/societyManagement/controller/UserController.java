@@ -48,6 +48,16 @@ public class UserController {
         return ResponseEntity.ok(userPage);
     }
 
+    @GetMapping("/search-list")
+    public ResponseEntity<ApiResponse<List<User>>> searchUserList(@RequestParam(required = false) String name,
+                                                 @RequestParam(required = false) String email)
+    {
+
+        List<User> users = userService.searchUserList(name,email);
+        ApiResponse<List<User>> response = new ApiResponse<>(true,"Users fetched Successfully",users);
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<UserDetails>> updateUser(@PathVariable Long id,@RequestBody User user) {
         log.info("Request received for PUT /user/id endpoint.");

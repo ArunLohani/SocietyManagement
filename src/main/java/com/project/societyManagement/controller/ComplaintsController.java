@@ -1,5 +1,6 @@
 package com.project.societyManagement.controller;
 
+import com.project.societyManagement.annotations.RequiresPermission;
 import com.project.societyManagement.dto.Api.ApiResponse;
 import com.project.societyManagement.dto.Complaints.ComplaintIssuingRequest;
 import com.project.societyManagement.entity.Complaints;
@@ -20,6 +21,7 @@ public class ComplaintsController {
 
     private final ComplaintsService complaintsService;
 
+    @RequiresPermission(api = "CREATE_COMPLAINTS")
     @PostMapping
     public ResponseEntity<ApiResponse<Complaints>> issueComplaint(
             @RequestBody ComplaintIssuingRequest complaintRequest) {
@@ -31,6 +33,7 @@ public class ComplaintsController {
         );
     }
 
+    @RequiresPermission(api = "EDIT_COMPLAINTS")
     @PutMapping("/{complaintId}")
     public ResponseEntity<ApiResponse<Complaints>> updateComplaint(@PathVariable Long complaintId,
             @RequestBody ComplaintIssuingRequest complaintRequest) {
@@ -42,6 +45,7 @@ public class ComplaintsController {
         );
     }
 
+    @RequiresPermission(api = "CREATE_COMPLAINTS")
     @DeleteMapping("/{complaintId}")
     public ResponseEntity<ApiResponse<Complaints>> deleteComplaint(@PathVariable Long complaintId) {
 
@@ -52,7 +56,7 @@ public class ComplaintsController {
         );
     }
 
-
+    @RequiresPermission(api = "SEARCH_COMPLAINTS")
     @GetMapping("/{complaintId}")
     public ResponseEntity<ApiResponse<Complaints>> getComplaintById(@PathVariable Long complaintId) {
         Complaints complaint = complaintsService.getComplaintById(complaintId);
@@ -61,6 +65,7 @@ public class ComplaintsController {
         );
     }
 
+    @RequiresPermission(api = "EDIT_COMPLAINTS")
     @PutMapping("/{complaintId}/assign/{userId}")
     public ResponseEntity<ApiResponse<Complaints>> assignComplaint(
             @PathVariable Long complaintId,
@@ -72,6 +77,7 @@ public class ComplaintsController {
         );
     }
 
+    @RequiresPermission(api = "EDIT_COMPLAINTS")
     @PatchMapping("/{complaintId}/status")
     public ResponseEntity<ApiResponse<Complaints>> changeComplaintStatus(
             @PathVariable Long complaintId,
@@ -83,6 +89,7 @@ public class ComplaintsController {
         );
     }
 
+    @RequiresPermission(api = "SEARCH_COMPLAINTS")
     @GetMapping("/raised-by/{userId}")
     public ResponseEntity<ApiResponse<Page<Complaints>>> listComplaintsByUser(
             @PathVariable Long userId,
@@ -97,7 +104,7 @@ public class ComplaintsController {
         );
     }
 
-
+    @RequiresPermission(api = "SEARCH_COMPLAINTS")
     @GetMapping("/assigned-to/{userId}")
     public ResponseEntity<ApiResponse<Page<Complaints>>> listComplaintsAssignedToUser(
             @PathVariable Long userId,
@@ -112,7 +119,7 @@ public class ComplaintsController {
         );
     }
 
-
+    @RequiresPermission(api = "SEARCH_COMPLAINTS")
     @PostMapping("/search")
     public ResponseEntity<ApiResponse<Page<Complaints>>> searchComplaints(
             @RequestBody ComplaintsFilter filter,
@@ -127,6 +134,7 @@ public class ComplaintsController {
         );
     }
 
+    @RequiresPermission(api = "EDIT_COMPLAINTS")
     @PatchMapping("/{complaintId}/resolution")
     public ResponseEntity<ApiResponse<Complaints>> addResolutionNotes(
             @PathVariable Long complaintId,

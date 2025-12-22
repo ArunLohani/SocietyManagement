@@ -90,6 +90,14 @@ public class UserServiceImpl implements UserService {
         return userQueryBuilder.searchPaginated(userFilter,pageable);
     }
 
+    @Override
+    public List<User> searchUserList(String name, String email) {
+        UserFilter userFilter = new UserFilter();
+        userFilter.setEmail(email);
+        userFilter.setName(name);
+        return userQueryBuilder.search(userFilter);
+    }
+
     public List<UserDetails> findUsersNotAssignedToTenant(){
         UserFilter userFilter = new UserFilter();
         userFilter.setTenantId(0L);

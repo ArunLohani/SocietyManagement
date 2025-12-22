@@ -1,5 +1,6 @@
 package com.project.societyManagement.controller;
 
+import com.project.societyManagement.annotations.RequiresPermission;
 import com.project.societyManagement.dto.Api.ApiResponse;
 import com.project.societyManagement.dto.Notice.NoticeCreationRequest;
 import com.project.societyManagement.entity.Notice;
@@ -20,7 +21,7 @@ public class NoticeController {
 
     private final NoticeService noticeService;
 
-
+    @RequiresPermission(api = "CREATE_NOTICES")
     @PostMapping
     public ResponseEntity<ApiResponse<Notice>> createNotice(
             @RequestBody NoticeCreationRequest request
@@ -32,7 +33,7 @@ public class NoticeController {
         );
     }
 
-
+    @RequiresPermission(api = "SEARCH_NOTICES")
     @GetMapping("/{noticeId}")
     public ResponseEntity<ApiResponse<Notice>> getNoticeById(
             @PathVariable Long noticeId
@@ -43,7 +44,7 @@ public class NoticeController {
         );
     }
 
-
+    @RequiresPermission(api = "EDIT_NOTICES")
     @PutMapping("/{noticeId}")
     public ResponseEntity<ApiResponse<Notice>> updateNotice(
             @PathVariable Long noticeId,
@@ -55,8 +56,8 @@ public class NoticeController {
         );
     }
 
+    @RequiresPermission(api = "CREATE_NOTICES")
     @DeleteMapping("/{noticeId}")
-    @PutMapping("/{noticeId}")
     public ResponseEntity<ApiResponse<Notice>> deleteNotice(
             @PathVariable Long noticeId
     ) {
@@ -66,6 +67,7 @@ public class NoticeController {
         );
     }
 
+    @RequiresPermission(api = "EDIT_NOTICES")
     @PatchMapping("/{noticeId}/toggle-public")
     public ResponseEntity<ApiResponse<Notice>> togglePublic(
             @PathVariable Long noticeId
@@ -76,6 +78,7 @@ public class NoticeController {
         );
     }
 
+    @RequiresPermission(api = "EDIT_NOTICES")
     @PatchMapping("/{noticeId}/toggle-expired")
     public ResponseEntity<ApiResponse<Notice>> toggleExpired(
             @PathVariable Long noticeId
@@ -86,6 +89,7 @@ public class NoticeController {
         );
     }
 
+    @RequiresPermission(api = "SEARCH_NOTICES")
     @GetMapping("/tenant/{tenantId}")
     public ResponseEntity<ApiResponse<Page<Notice>>> getNoticesForTenant(
             @PathVariable Long tenantId,
@@ -99,6 +103,7 @@ public class NoticeController {
         );
     }
 
+    @RequiresPermission(api = "SEARCH_NOTICES")
     @PostMapping("/search")
     public ResponseEntity<ApiResponse<Page<Notice>>> searchNotices(
             @RequestBody NoticeFilter filter,

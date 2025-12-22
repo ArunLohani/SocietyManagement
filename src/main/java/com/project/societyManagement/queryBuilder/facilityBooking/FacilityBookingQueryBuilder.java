@@ -80,5 +80,7 @@ public class FacilityBookingQueryBuilder extends AbstractFilterableQueryBuilder<
         if (filter.getId() != null) cb.where("fb.id").eq(filter.getId());
         if (filter.getFacility() != null) cb.where("fb.facility.id").eq(filter.getFacility());
         if (filter.getUser() != null) cb.where("fb.user.id").eq(filter.getUser());
+        if (filter.getIsActive()!=null) cb.where("fb.isActive").eq(filter.getIsActive());
+
     }
 }

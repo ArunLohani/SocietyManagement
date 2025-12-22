@@ -90,5 +90,8 @@ public class ComplaintsQueryBuilder extends AbstractFilterableQueryBuilder<Compl
         if (filter.getTenantId()!=null) cb.where("c.tenant.id").eq(filter.getTenantId());
         if (filter.getCategory()!=null) cb.where("c.category").eq(filter.getCategory());
         if (filter.getPriority()!=null) cb.where("c.priority").eq(Priority.valueOf(filter.getPriority()));
+        if (filter.getSortFilter() != null){
+            applySorting(cb,filter.getSortFilter().getProperty(),filter.getSortFilter().getAsc());
+        }
     }
 }

@@ -10,6 +10,8 @@ import com.project.societyManagement.repository.UserRepo;
 import com.project.societyManagement.service.RoleService;
 import com.project.societyManagement.service.UserRoleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -84,4 +86,35 @@ public class UserRoleServiceImpl implements UserRoleService {
         userFilter.setTenantId(tenantId);
      return userQueryBuilder.search(userFilter);
     }
+
+    @Override
+    public Page<UserWithRolesDTO> getUsersByTenantIdPaginated(Long tenantId, Pageable pageable) {
+        UserFilter userFilter = new UserFilter();
+        userFilter.setTenantId(tenantId);
+
+        // Get the paginated result of users
+        Page<User> userPage = userQueryBuilder.searchPaginated(userFilter, pageable);
+
+        // Convert the Page<User> to Page<UserWithRolesDTO>
+        Page<UserWithRolesDTO> userWithRolesDTOPage = userPage.map(user -> {
+            List<Long> roleIds = user.getRoles().stream()
+                    .map(Role::getId)
+                    .collect(Collectors.toList());
+            List<String> roleNames = user.getRoles().stream()
+                    .map(Role::getRole)
+                    .collect(Collectors.toList());
+
+            return UserWithRolesDTO.builder()
+                    .id(user.getId())
+                    .name(user.getName())
+                    .email(user.getEmail())
+                    .phoneNumber(user.getPhoneNumber())
+                    .assignedRoleIds(roleIds)
+                    .assignedRoleNames(roleNames)
+                    .build();
+        });
+
+        return userWithRolesDTOPage;
+    }
+
 }

@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet  id="creating-flat-table"  author="Arun">
+        <sql>
+            CREATE TABLE flats (
+            id BIGSERIAL PRIMARY KEY,
+            floor INT,
+            sqFt INT,
+            block VARCHAR(200),
+            number INT,
+            category VARCHAR(200),
+            tenant_id BIGINT NOT NULL,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (tenant_id) REFERENCES tenant (id),
+            CONSTRAINT uk_flat_tenant_block_number UNIQUE (tenant_id, block, number)
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet  id="creating-flat-member-table"  author="Arun">
+        <sql>
+            CREATE TABLE flat_members (
+            id BIGSERIAL PRIMARY KEY,
+            type VARCHAR(200),
+            flat_id BIGINT NOT NULL,
+            user_id BIGINT NOT NULL,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (flat_id) REFERENCES flats (id),
+            FOREIGN KEY (user_id) REFERENCES users (id),
+            CONSTRAINT uk_flat_user UNIQUE (user_id, flat_id)
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet  id="creating-tenant-category-pricing-table"  author="Arun">
+        <sql>
+            CREATE TABLE tenant_category_pricing (
+            id BIGSERIAL PRIMARY KEY,
+            category VARCHAR(200),
+            tenant_id BIGINT NOT NULL,
+            monthly_fee DOUBLE PRECISION,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (tenant_id) REFERENCES tenant (id)
+            );
+        </sql>
+    </changeSet>
+    <changeSet  id="change-flats-col-name"  author="Arun">
+        <sql>
+    ALTER TABLE flats RENAME COLUMN sqFt TO sq_ft;
+        </sql>
+    </changeSet >
+
+    <changeSet  id="add-penalty-column-in-tenant-category-pricing"  author="Arun">
+        <sql>
+            ALTER TABLE tenant_category_pricing ADD COLUMN penalty_fee DOUBLE PRECISION;
+        </sql>
+    </changeSet >
+
+</databaseChangeLog>

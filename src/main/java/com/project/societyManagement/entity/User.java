@@ -50,7 +50,6 @@ public class User extends AuditableEntity implements UserDetails {
     )
     private Set<Role> roles = new HashSet<>();
 
-
     @ManyToOne
     @JoinColumn(name = "tenant_id",nullable = false)
     private Tenant tenant;
@@ -65,28 +64,25 @@ public class User extends AuditableEntity implements UserDetails {
         return email;
     }
 
-
     @ManyToMany(mappedBy = "participants",fetch = FetchType.LAZY)
     @JsonIgnore
     private Set<Event> eventsParticipated = new HashSet<>();
-
 
     @OneToMany(mappedBy = "raisedByUser", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Complaints> complaintsRaised = new ArrayList<>();
 
-
     @OneToMany(mappedBy = "assignedToUser", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
     @JsonIgnore
     private List<Complaints> complaintsAssigned = new ArrayList<>();
 
-    @OneToMany(mappedBy = "owner_id", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<Vehicle> vehicles = new ArrayList<>();
+//    @OneToMany(mappedBy = "owner", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+//    @JsonIgnore
+//    private List<Vehicle> vehicles = new ArrayList<>();
 
-    @OneToMany(mappedBy = "user_id", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
-    @JsonIgnore
-    private List<ParkingSlot> parkingSlots = new ArrayList<>();
+//    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true,fetch = FetchType.LAZY)
+//    @JsonIgnore
+//    private List<ParkingSlot> parkingSlots = new ArrayList<>();
 
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
@@ -95,5 +91,9 @@ public class User extends AuditableEntity implements UserDetails {
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     @JsonIgnore
     private List<FacilityBooking> facilityBookings = new ArrayList<>();
+
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnore
+    private List<FlatMember> flatMemberships = new ArrayList<>();
 
 }

@@ -2,6 +2,7 @@ package com.project.societyManagement.entity;
 
 import com.project.societyManagement.entity.common.AuditableEntity;
 import jakarta.persistence.Entity;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
@@ -18,7 +19,9 @@ import lombok.experimental.SuperBuilder;
 @Table(name = "facility_registered_user")
 public class FacilityRegisteredUser extends AuditableEntity {
     @ManyToOne(optional = false)
+    @JoinColumn(name = "facility_id")
     private Facility facility;
     @ManyToOne(optional = false)
+    @JoinColumn(name = "user_id")
     private User user;
 }

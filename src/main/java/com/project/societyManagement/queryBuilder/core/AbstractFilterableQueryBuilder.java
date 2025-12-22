@@ -31,7 +31,7 @@ public abstract class AbstractFilterableQueryBuilder<T,F> implements BaseQueryBu
         try {
             return cb.getSingleResult();
         } catch (NoResultException e) {
-            throw new UserNotFoundException("Entity not found for the provided criteria.");
+            throw new UserNotFoundException(  getEntityClass().getSimpleName() +" not found for the provided criteria.");
         }
     }
 
@@ -73,6 +73,13 @@ public abstract class AbstractFilterableQueryBuilder<T,F> implements BaseQueryBu
     }
     protected void applyFilters(CriteriaBuilder<T>cb , F filter){};
     protected void applyAuthorization(CriteriaBuilder<T>cb){};
+    protected void applySorting(CriteriaBuilder<T> cb, String property, boolean asc) {
+        if (asc) {
+            cb.orderByAsc(getEntityAlias() + "." + property);
+        } else {
+            cb.orderByDesc(getEntityAlias() + "." + property);
+        }
+    }
 
 
 

@@ -70,7 +70,7 @@ public class TenantRoleQueryBuilder extends AbstractFilterableQueryBuilder<Tenan
         }
         if (roles.contains("ADMIN")){
             cb
-                    .where("tr.role.role").notEq("ADMIN")
+//                    .where("tr.role.role").notEq("ADMIN")
                     .where("tr.role.role").notEq("SUPER_ADMIN");
             return;
         }

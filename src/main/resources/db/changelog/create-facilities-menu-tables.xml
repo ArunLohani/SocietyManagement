@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet  id="creating-facility-table"  author="Arun">
+        <sql>
+            CREATE TABLE facility (
+            id BIGSERIAL PRIMARY KEY,
+            facility_name VARCHAR(200),
+            capacity INT,
+            description VARCHAR(500),
+            managed_by BIGINT,
+            location VARCHAR(500),
+            open_time TIMESTAMPTZ,
+            close_time TIMESTAMPTZ,
+            open_for_all BOOLEAN,
+            tenant_id BIGINT NOT NULL,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (tenant_id) REFERENCES tenant (id),
+            FOREIGN KEY (managed_by) REFERENCES users (id)
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet id="creating-facility-registered-user-table" author="Arun">
+        <sql>
+            CREATE TABLE facility_registered_user (
+            id BIGSERIAL PRIMARY KEY,
+            user_id BIGINT,
+            facility_id BIGINT,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (user_id) REFERENCES users (id),
+            FOREIGN KEY (facility_id) REFERENCES facility (id)
+            );
+
+        </sql>
+    </changeSet>
+
+    <changeSet  id="creating-facility-booking-table"  author="Arun">
+        <sql>
+            CREATE TABLE facility_booking (
+            id BIGSERIAL PRIMARY KEY,
+           facility_id BIGINT,
+            user_id BIGINT,
+            status VARCHAR(200),
+            admin_comment  VARCHAR(500),
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+            FOREIGN KEY (user_id) REFERENCES users (id),
+            FOREIGN KEY (facility_id) REFERENCES facility (id)
+            );
+        </sql>
+    </changeSet>
+
+
+
+</databaseChangeLog>

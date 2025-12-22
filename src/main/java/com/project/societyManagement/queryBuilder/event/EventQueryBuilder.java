@@ -83,5 +83,9 @@ public class EventQueryBuilder extends AbstractFilterableQueryBuilder<Event, Eve
         if (filter.getStartDateTime()!=null) cb.where("e.startDateTime").ge(filter.getStartDateTime());
         if (filter.getEndDateTime()!=null)cb.where("e.endStartTime").ge(filter.getEndDateTime());
         if (filter.getTenantId()!=null) cb.where("e.tenant.id").eq(filter.getTenantId());
+        if (filter.getIsActive()!=null) cb.where("e.isActive").eq(filter.getIsActive());
+        if (filter.getSortFilter() != null){
+            applySorting(cb,filter.getSortFilter().getProperty(),filter.getSortFilter().getAsc());
+        }
     }
 }

@@ -1,5 +1,6 @@
 package com.project.societyManagement.queryBuilder.complaints;
 
+import com.project.societyManagement.entity.types.SortFilter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,5 @@ public class ComplaintsFilter {
     private Long tenantId;
     private String status;
     private String priority;
+    private SortFilter sortFilter = new SortFilter("createdAt",false);
 }

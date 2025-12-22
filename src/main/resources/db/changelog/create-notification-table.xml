@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet  id="creating-notification-table"  author="Arun">
+        <sql>
+            CREATE TABLE notifications (
+            id BIGSERIAL PRIMARY KEY,
+            user_id BIGINT,
+            tenant_id BIGINT,
+            title VARCHAR(500),
+            message VARCHAR(1000),
+            url VARCHAR(200),
+            type VARCHAR(200),
+            read BOOLEAN DEFAULT TRUE ,
+            created_by BIGINT,
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE
+            );
+        </sql>
+    </changeSet>
+
+
+</databaseChangeLog>

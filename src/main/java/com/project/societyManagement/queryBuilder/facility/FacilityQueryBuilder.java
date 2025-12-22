@@ -84,6 +84,8 @@ public class FacilityQueryBuilder extends AbstractFilterableQueryBuilder<Facilit
         if (filter.getOpenForAll() != null) cb.where("f.openForAll").eq(filter.getOpenForAll());
         if (filter.getManager()!=null) cb.where("f.manager.id").eq(filter.getManager());
         if (filter.getTenantId()!=null) cb.where("f.tenant.id").eq(filter.getTenantId());
+        if (filter.getIsActive()!=null) cb.where("f.isActive").eq(filter.getIsActive());
+
 
     }
 }

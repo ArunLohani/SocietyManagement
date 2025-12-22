@@ -18,6 +18,10 @@
     <include file="create-notice-table.xml" relativeToChangelogFile="true"/>
     <include file="create-complaints-table.xml" relativeToChangelogFile="true"/>
     <include file="create-vehicle-and-parking-slot-table.xml" relativeToChangelogFile="true"/>
+    <include file="create-facilities-menu-tables.xml" relativeToChangelogFile="true"/>
+    <include file="create-flat-features-table.xml" relativeToChangelogFile="true"/>
+    <include file="create-maintenance-payment-table.xml" relativeToChangelogFile="true"/>
+    <include file="create-notification-table.xml" relativeToChangelogFile="true"/>
 
 
 </databaseChangeLog>

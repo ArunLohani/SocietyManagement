@@ -2,10 +2,7 @@ package com.project.societyManagement.service.impl;
 
 import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.dto.ParkingSlot.ParkingSlotRegisterRequest;
-import com.project.societyManagement.entity.ParkingSlot;
-import com.project.societyManagement.entity.Tenant;
-import com.project.societyManagement.entity.User;
-import com.project.societyManagement.entity.Vehicle;
+import com.project.societyManagement.entity.*;
 import com.project.societyManagement.entity.types.ParkingSlotStatus;
 import com.project.societyManagement.queryBuilder.parkingSlot.ParkingSlotFilter;
 import com.project.societyManagement.queryBuilder.parkingSlot.ParkingSlotQueryBuilder;
@@ -50,9 +47,9 @@ public class ParkingSlotServiceImpl implements ParkingSlotService {
         return parkingSlotRepo.save(parkingSlot);
     }
 
-    public ParkingSlot updateSlotStatus(Long id , ParkingSlotStatus status){
+    public ParkingSlot updateSlotStatus(Long id , String status){
         ParkingSlot parkingSlot = getParkingSlotById(id);
-        parkingSlot.setStatus(status);
+        parkingSlot.setStatus(ParkingSlotStatus.valueOf(status));
         return parkingSlotRepo.save(parkingSlot);
     }
 
@@ -72,18 +69,18 @@ public class ParkingSlotServiceImpl implements ParkingSlotService {
         return parkingSlotRepo.save(parkingSlot);
     }
 
-    public ParkingSlot occupyParkingSlot(Long id, User user){
+    public ParkingSlot occupyParkingSlot(Long id, Flat flat){
         ParkingSlot parkingSlot = getParkingSlotById(id);
         if (parkingSlot.getStatus().name() == "RESERVED"){
             throw new IllegalStateException("This Parking is reserved.");
         }
-        parkingSlot.setUser(user);
+        parkingSlot.setFlat(flat);
         parkingSlot.setStatus(ParkingSlotStatus.OCCUPIED);
         return parkingSlotRepo.save(parkingSlot);
     }
     public ParkingSlot freeParkingSlot(Long id){
         ParkingSlot parkingSlot = getParkingSlotById(id);
-        parkingSlot.setUser(null);
+        parkingSlot.setFlat(null);
         parkingSlot.setStatus(ParkingSlotStatus.AVAILABLE);
         return parkingSlotRepo.save(parkingSlot);
     }

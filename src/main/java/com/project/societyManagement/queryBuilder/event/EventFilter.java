@@ -1,6 +1,7 @@
 package com.project.societyManagement.queryBuilder.event;
 
 
+import com.project.societyManagement.entity.types.SortFilter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -22,4 +23,5 @@ public class EventFilter {
     private String status;
     private String location;
     private Long tenantId;
+    private SortFilter sortFilter = new SortFilter("createdAt",false);
 }

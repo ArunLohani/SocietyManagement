@@ -76,5 +76,7 @@ public class FacilityRegisteredUserQueryBuilder extends AbstractFilterableQueryB
         if (filter.getId() != null) cb.where("f.id").eq(filter.getId());
         if (filter.getFacility() != null) cb.where("f.facility.id").eq(filter.getFacility());
         if (filter.getUser() != null) cb.where("f.user.id").eq(filter.getUser());
+        if (filter.getIsActive()!=null) cb.where("f.isActive").eq(filter.getIsActive());
+
     }
 }

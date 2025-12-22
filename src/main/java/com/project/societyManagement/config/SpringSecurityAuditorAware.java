@@ -12,25 +12,17 @@ import java.util.Optional;
 @Slf4j
 public class SpringSecurityAuditorAware implements AuditorAware<Long> {
 
-
     @Override
     public Optional<Long> getCurrentAuditor() {
-
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-
         if(authentication == null || !authentication.isAuthenticated() || authentication instanceof AnonymousAuthenticationToken){
             return Optional.empty();
         }
-
         Object principal = authentication.getPrincipal();
         if(principal instanceof User){
             User user = (User) authentication.getPrincipal();
             return Optional.of(user.getId());
         }
-
-
         return Optional.empty();
-
-
     }
 }

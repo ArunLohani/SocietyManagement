@@ -44,4 +44,9 @@ public class Tenant extends AuditableEntity {
     @JsonIgnore
     private List<Facility> facilities = new ArrayList<>();
 
+    @OneToMany(mappedBy = "tenant", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private List<Flat> flats = new ArrayList<>();
+
+
 }

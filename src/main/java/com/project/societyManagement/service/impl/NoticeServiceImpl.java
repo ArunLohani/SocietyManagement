@@ -6,8 +6,9 @@ import com.project.societyManagement.entity.Notice;
 import com.project.societyManagement.entity.Tenant;
 import com.project.societyManagement.queryBuilder.notice.NoticeFilter;
 import com.project.societyManagement.queryBuilder.notice.NoticeQueryBuilder;
-import com.project.societyManagement.repository.NoticeRepository;
+import com.project.societyManagement.repository.NoticeRepo;
 import com.project.societyManagement.service.NoticeService;
+import com.project.societyManagement.service.NotificationService;
 import com.project.societyManagement.service.TenantService;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
@@ -19,16 +20,22 @@ import org.springframework.stereotype.Service;
 @Service
 public class NoticeServiceImpl implements NoticeService {
 
-    private final NoticeRepository noticeRepository;
+    private final NoticeRepo noticeRepo;
     private final NoticeQueryBuilder noticeQueryBuilder;
     private final ModelMapper modelMapper;
     private final TenantService tenantService;
-
+    private final NotificationService notificationService;
     public Notice createNotice(NoticeCreationRequest noticeRequest){
         Notice notice = modelMapper.map(noticeRequest,Notice.class);
         Tenant tenant = tenantService.findTenantById(TenantContextHolder.getCurrentTenant());
         notice.setTenant(tenant);
-        return noticeRepository.save(notice);
+        notice = noticeRepo.save(notice);
+        notificationService.notifySociety(
+                notice.getTenant().getId(),
+                "New Notice: " + notice.getTitle(),
+                "A new notice has been published: " + notice.getTitle(),"/menu/notices/"+notice.getId()
+        );
+        return notice;
     }
 
     public Notice getNoticeById(Long noticeId) {
@@ -47,24 +54,24 @@ public class NoticeServiceImpl implements NoticeService {
                 .isPublic(noticeCreationRequest.getIsPublic())
                 .category(noticeCreationRequest.getCategory())
                 .build();
-        return noticeRepository.save(notice);
+        return noticeRepo.save(notice);
     }
 
     public Notice deleteNotice(Long noticeId){
         Notice notice = getNoticeById(noticeId);
-        notice.setActive(false);
-        return noticeRepository.save(notice);
+        notice.setIsActive(false);
+        return noticeRepo.save(notice);
     }
     public Notice togglePublicStatus(Long noticeId){
         Notice notice = getNoticeById(noticeId);
         notice.setIsPublic(!notice.getIsPublic());
-        return noticeRepository.save(notice);
+        return noticeRepo.save(notice);
     }
 
     public Notice toggleExpiryStatus(Long noticeId){
         Notice notice = getNoticeById(noticeId);
         notice.setIsExpired(!notice.getIsExpired());
-        return noticeRepository.save(notice);
+        return noticeRepo.save(notice);
     }
 
     public Page<Notice> getNoticesForTenant(Long tenantId , Pageable pageable){

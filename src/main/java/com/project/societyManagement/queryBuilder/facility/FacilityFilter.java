@@ -28,4 +28,5 @@ public class FacilityFilter {
     private LocalTime closeTime;
     private Boolean openForAll;
     private Long tenantId;
+    private Boolean isActive = true;
 }

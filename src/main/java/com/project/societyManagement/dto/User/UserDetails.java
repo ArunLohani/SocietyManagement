@@ -17,4 +17,5 @@ public class UserDetails {
     private String name;
     private String email;
     private Set<String> roles;
+    private String societyName;
 }

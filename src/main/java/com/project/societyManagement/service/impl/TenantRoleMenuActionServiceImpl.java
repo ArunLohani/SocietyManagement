@@ -78,7 +78,11 @@ public class TenantRoleMenuActionServiceImpl implements TenantRoleMenuActionServ
         Action actionToRemove = tenantRoleMenuAction.getAction();
 
         if (actionToRemove != null && "READ".equalsIgnoreCase(actionToRemove.getAction().toString())){
-                throw new IllegalStateException("READ Action is mandatory and cannot be designed from menu.");
+                throw new IllegalStateException("READ Action is mandatory and cannot be unassigned from menu.");
+        }
+
+        if (actionToRemove != null && actionToRemove.getPriority() < tenantRoleMenuAction.getTenantRoleMenu().getPriority()){
+            throw new IllegalStateException("Cannot unassign this action because a higher-priority action already exists.");
         }
 
         // Deactivate the mapping

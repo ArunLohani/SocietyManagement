@@ -21,4 +21,5 @@ public class FacilityBookingFilter {
     private Long user;
     private BookingStatus status;
     private String adminComments;
+    private Boolean isActive = true;
 }

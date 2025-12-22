@@ -69,5 +69,7 @@ public class ActionQueryBuilder extends AbstractFilterableQueryBuilder<Action, A
         if(filter.getId()!=null) cb.where("a.id").eq(filter.getId());
         if(filter.getPriority() != null) cb.where("a.priority").le(filter.getPriority());
         if (filter.getAction()!=null)cb.where("a.action").eq(Actions.valueOf(filter.getAction()));
+        if (filter.getIsActive()!=null) cb.where("a.isActive").eq(filter.getIsActive());
+
     }
 }

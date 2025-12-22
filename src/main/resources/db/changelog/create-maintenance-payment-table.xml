@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet  id="creating-maintenance_payments-table"  author="Arun">
+        <sql>
+            CREATE TABLE maintenance_payments (
+            id BIGSERIAL PRIMARY KEY,
+
+            flat_id BIGINT NOT NULL,
+            user_id BIGINT NOT NULL,
+
+            billing_start_date DATE NOT NULL,
+            billing_end_date DATE NOT NULL,
+
+            billing_cycle VARCHAR(50) NOT NULL,
+            months_covered INT NOT NULL,
+
+            monthly_fee DOUBLE PRECISION NOT NULL,
+            final_amount DOUBLE PRECISION NOT NULL,
+
+            status VARCHAR(50) NOT NULL,
+
+            payment_date DATE,
+            transaction_id VARCHAR(255),
+            payment_method VARCHAR(100),
+
+            payment_gateway_response TEXT,
+            reference_number VARCHAR(255),
+
+            -- Auditable Fields (from AuditableEntity)
+            created_by BIGINT,
+            created_at TIMESTAMPTZ DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+
+            -- Foreign Keys
+            CONSTRAINT fk_payment_flat FOREIGN KEY (flat_id) REFERENCES flats(id),
+            CONSTRAINT fk_payment_user FOREIGN KEY (user_id) REFERENCES users(id)
+            );
+        </sql>
+    </changeSet>
+
+    <changeSet  id="add-penalty-column-in-tenant-category-pricing"  author="Arun">
+        <sql>
+            ALTER TABLE maintenance_payments ADD COLUMN due_date DATE;
+            ALTER TABLE maintenance_payments ADD COLUMN base_amount DOUBLE PRECISION NOT NULL;
+            ALTER TABLE maintenance_payments ADD COLUMN penalty_amount DOUBLE PRECISION NOT NULL;
+            ALTER TABLE maintenance_payments ADD COLUMN is_overdue BOOLEAN;
+            ALTER TABLE maintenance_payments ADD COLUMN overdue_days INT;
+
+        </sql>
+    </changeSet >
+
+</databaseChangeLog>

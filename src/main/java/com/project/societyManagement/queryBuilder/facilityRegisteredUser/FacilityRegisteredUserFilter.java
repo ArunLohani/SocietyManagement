@@ -11,4 +11,5 @@ public class FacilityRegisteredUserFilter {
     private Long id;
     private Long facility;
     private Long user;
+    private Boolean isActive = true;
 }

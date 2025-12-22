@@ -12,7 +12,7 @@ public class ParkingSlotFilter {
     private String area;
     private String slotNumber;
     private String status;
-    private Long user;
+    private Long flat;
     private Long tenant;
-
+    private Boolean isActive = true;
 }

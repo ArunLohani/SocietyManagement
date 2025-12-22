@@ -84,5 +84,7 @@ public class TenantRoleMenuQueryBuilder extends AbstractFilterableQueryBuilder<T
         if(filter.getId()!=null) cb.where("trm.id").eq(filter.getId());
         if(filter.getTenantRoleId() != null) cb.where("trm.tenantRoles.id").eq(filter.getTenantRoleId());
         if(filter.getMenuId() != null) cb.where("trm.menu.id").eq(filter.getMenuId());
+        if (filter.getIsActive()!=null) cb.where("trm.isActive").eq(filter.getIsActive());
+
     }
 }

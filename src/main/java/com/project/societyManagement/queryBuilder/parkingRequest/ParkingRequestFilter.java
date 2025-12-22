@@ -17,8 +17,9 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class ParkingRequestFilter {
     private Long id;
-    private Long user;
+    private Long flat;
     private Long requestedSlot;
     private String status;
     private String adminComment;
+    private Boolean isActive = true;
 }

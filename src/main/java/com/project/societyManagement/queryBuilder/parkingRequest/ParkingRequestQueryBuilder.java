@@ -75,20 +75,24 @@ public class ParkingRequestQueryBuilder extends AbstractFilterableQueryBuilder<P
     public void applyAuthorization(CriteriaBuilder<ParkingRequest> cb){
         Set<String> roles = getLoggedInUserRole();
         if (roles.contains("ADMIN")){
-            cb.where("pr.user.tenant.id").eq(TenantContextHolder.getCurrentTenant());
+            cb.where("pr.flat.tenant.id").eq(TenantContextHolder.getCurrentTenant());
             return ;
         }
-        cb.where("pr.user.id").eq(getCurrentUser().getId());
+        cb.whereExists()
+                .from(FlatMember.class, "fm")
+                .where("fm.flat.id").eqExpression("pr.flat.id")
+                .end();
     }
 
     @Override
     public void applyFilters(CriteriaBuilder<ParkingRequest> cb,ParkingRequestFilter filter){
         if(filter.getId()!=null) cb.where("pr.id").eq(filter.getId());
-        if(filter.getUser() != null) cb.where("pr.user.id").eq(filter.getUser());
-
+        if(filter.getFlat() != null) cb.where("pr.flat.id").eq(filter.getFlat());
         if (filter.getRequestedSlot()!=null) cb.where("pr.requestedSlot.id").eq(filter.getRequestedSlot());
         if (filter.getStatus()!=null) cb.where("pr.status").eq(ParkingRequestStatus.valueOf(filter.getStatus()));
         if (filter.getAdminComment()!=null) cb.where("pr.adminComment").eq(filter.getAdminComment());
+        if (filter.getIsActive()!=null) cb.where("pr.isActive").eq(filter.getIsActive());
+
     }
 
 }

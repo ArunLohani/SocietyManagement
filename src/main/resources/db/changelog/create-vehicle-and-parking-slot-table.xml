@@ -30,7 +30,7 @@
             updated_at TIMESTAMPTZ,
             is_active BOOLEAN DEFAULT TRUE,
             FOREIGN KEY (tenant_id) REFERENCES tenant (id),
-            FOREIGN KEY (user_id) REFERENCES user (id)
+            FOREIGN KEY (user_id) REFERENCES users (id)
             );
         </sql>
     </changeSet>
@@ -39,8 +39,8 @@
         <sql>
             CREATE TABLE vehicles (
             id BIGSERIAL PRIMARY KEY,
-            registrationNumber VARCHAR(200) NOT NULL UNIQUE,
-            vehicleType VARCHAR(200),
+            registration_number VARCHAR(200) NOT NULL UNIQUE,
+            vehicle_type VARCHAR(200),
             brand VARCHAR(200),
             model VARCHAR(200),
             owner_id BIGINT NOT NULL,
@@ -49,7 +49,7 @@
             updated_by BIGINT,
             updated_at TIMESTAMPTZ,
             is_active BOOLEAN DEFAULT TRUE,
-            FOREIGN KEY (owner_id) REFERENCES user (id)
+            FOREIGN KEY (owner_id) REFERENCES users (id)
             );
         </sql>
     </changeSet>
@@ -61,16 +61,76 @@
             user_id BIGINT,
             requested_slot_id BIGINT,
             status VARCHAR(200),
-            adminComment VARCHAR(500)
+            adminComment VARCHAR(500),
             created_by BIGINT,
             created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
             updated_by BIGINT,
             updated_at TIMESTAMPTZ,
             is_active BOOLEAN DEFAULT TRUE,
-            FOREIGN KEY (user_id) REFERENCES user (id),
+            FOREIGN KEY (user_id) REFERENCES users (id),
             FOREIGN KEY (requested_slot_id) REFERENCES parking_slot (id)
             );
 
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="correcting-parking-request-table-admin-comment-column-name" author="Arun">
+        <sql>
+            ALTER TABLE parking_requests
+            RENAME COLUMN adminComment TO admin_comment;
+
+        </sql>
+    </changeSet>
+
+
+    <changeSet id="adding-vehicle-image-col-in-vehicle-table" author="Arun">
+        <sql>
+            ALTER TABLE vehicles
+            ADD COLUMN image BYTEA;
+        </sql>
+    </changeSet>
+
+    <changeSet id="update-parking-slot-user-to-flat" author="Arun">
+        <sql>
+            ALTER TABLE parking_slot
+            RENAME COLUMN user_id TO flat_id;
+
+            ALTER TABLE parking_slot
+            DROP CONSTRAINT parking_slot_user_id_fkey;
+
+            ALTER TABLE parking_slot
+            ADD CONSTRAINT parking_slot_flat_id_fkey
+            FOREIGN KEY (flat_id) REFERENCES flats (id);
+        </sql>
+    </changeSet>
+    <changeSet id="update-vehicles-owner-to-flat" author="Arun">
+        <sql>
+            ALTER TABLE vehicles
+            DROP CONSTRAINT vehicles_owner_id_fkey;
+
+            ALTER TABLE vehicles
+            ADD CONSTRAINT vehicles_owner_id_fkey
+            FOREIGN KEY (owner_id) REFERENCES flats (id);
+        </sql>
+    </changeSet>
+    <changeSet id="update-parking-request-user-to-flat" author="Arun">
+        <sql>
+            ALTER TABLE parking_requests
+            RENAME COLUMN user_id TO flat_id;
+
+            ALTER TABLE parking_requests
+            DROP CONSTRAINT parking_requests_user_id_fkey;
+
+            ALTER TABLE parking_requests
+            ADD CONSTRAINT parking_requests_flat_id_fkey
+            FOREIGN KEY (flat_id) REFERENCES flats (id);
+        </sql>
+    </changeSet>
+    <changeSet id="drop-vehicle-image-column" author="Arun">
+        <sql>
+            ALTER TABLE vehicles
+            DROP COLUMN image;
         </sql>
     </changeSet>
 

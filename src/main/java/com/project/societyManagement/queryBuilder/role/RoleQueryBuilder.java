@@ -74,7 +74,7 @@ public class RoleQueryBuilder extends AbstractFilterableQueryBuilder<Role, RoleF
             }
         if (roles.contains("ADMIN")){
             cb
-                    .where("r.role").notEq("ADMIN")
+//                .where("r.role").notEq("ADMIN")
                     .where("r.role").notEq("SUPER_ADMIN");
             return;
         }
@@ -94,6 +94,7 @@ public class RoleQueryBuilder extends AbstractFilterableQueryBuilder<Role, RoleF
     public void applyFilters(CriteriaBuilder<Role> cb,RoleFilter filter){
         if(filter.getId()!=null) cb.where("r.id").eq(filter.getId());
         if(filter.getRole() != null) cb.where("r.role").eq(filter.getRole());
+        if (filter.getIsActive()!=null) cb.where("r.isActive").eq(filter.getIsActive());
 
     }
 

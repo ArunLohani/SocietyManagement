@@ -11,5 +11,5 @@ public class TenantRoleMenuActionFilter {
     private Long id;
     private Long tenantRoleMenuId;
     private Long actionId;
-    private boolean isActive;
+    private Boolean isActive = true;
 }

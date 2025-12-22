@@ -1,6 +1,5 @@
 package com.project.societyManagement.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.project.societyManagement.entity.common.AuditableEntity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -16,14 +15,18 @@ import lombok.NoArgsConstructor;
 @Table(name = "vehicles")
 public class Vehicle extends AuditableEntity {
 
+    @Column(name = "registration_number")
     private String registrationNumber;
+    @Column(name = "vehicle_type")
     private String vehicleType;
     private String brand;
     private String model;
     @ManyToOne
     @JoinColumn(name = "owner_id")
-    private User owner;
-
+    private Flat owningFlat;
+//    @Lob
+//    @Column(columnDefinition = "BYTEA")
+//    private byte[] image;
 //    @OneToOne
 //    @JoinColumn(name = "parking_slot_id")
 //    @JsonIgnore

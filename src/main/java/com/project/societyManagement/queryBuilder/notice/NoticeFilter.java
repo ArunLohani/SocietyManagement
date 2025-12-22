@@ -1,5 +1,6 @@
 package com.project.societyManagement.queryBuilder.notice;
 
+import com.project.societyManagement.entity.types.SortFilter;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,4 +19,5 @@ public class NoticeFilter {
     private Boolean isPublic;
     private Boolean isActive = true;
     private Long tenantId;
+    private SortFilter sortFilter = new SortFilter("createdAt",false);
 }

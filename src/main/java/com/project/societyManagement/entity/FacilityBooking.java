@@ -26,6 +26,7 @@ public class FacilityBooking extends AuditableEntity {
     private User user;
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
+    @Column(name = "admin_comment")
     private String adminComments;
     @PrePersist
     public void prePersist() {

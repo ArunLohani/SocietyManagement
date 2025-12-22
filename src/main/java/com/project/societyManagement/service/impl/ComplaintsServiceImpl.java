@@ -10,9 +10,7 @@ import com.project.societyManagement.entity.types.Priority;
 import com.project.societyManagement.queryBuilder.complaints.ComplaintsFilter;
 import com.project.societyManagement.queryBuilder.complaints.ComplaintsQueryBuilder;
 import com.project.societyManagement.repository.ComplaintsRepo;
-import com.project.societyManagement.service.ComplaintsService;
-import com.project.societyManagement.service.TenantService;
-import com.project.societyManagement.service.UserService;
+import com.project.societyManagement.service.*;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -28,7 +26,8 @@ public class ComplaintsServiceImpl implements ComplaintsService {
     private final ModelMapper modelMapper;
     private final TenantService tenantService;
     private final UserService userService;
-
+    private final NotificationService notificationService;
+    private final EmailService emailService;
     public Complaints getComplaintById(Long complaintId){
         ComplaintsFilter filter = new ComplaintsFilter();
         filter.setId(complaintId);
@@ -66,12 +65,14 @@ public class ComplaintsServiceImpl implements ComplaintsService {
         Complaints complaints = getComplaintById(complaintId);
         User user = userService.findUserById(userId);
         complaints.setAssignedToUser(user);
+        notificationService.notifyUser(complaints.getAssignedToUser().getId(),"Complaint Assigned to You","A new complaint has been assigned to you. Please take appropriate action.","/menu/complaints/"+complaintId);
         return complaintsRepo.save(complaints);
     }
 
     public Complaints changeComplaintStatus(Long complaintId , String status){
         Complaints complaints = getComplaintById(complaintId);
         complaints.setStatus(ComplaintStatus.valueOf(status));
+        notificationService.notifyUser(complaints.getRaisedByUser().getId(),"Your Complaint Status Change","The status of your complaint has been changed to "+status,"/menu/complaints/"+complaintId);
         return complaintsRepo.save(complaints);
     }
 

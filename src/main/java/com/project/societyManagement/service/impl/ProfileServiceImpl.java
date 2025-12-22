@@ -21,6 +21,7 @@ public class ProfileServiceImpl implements ProfileService {
                 .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
+                .societyName(user.getTenant().getName())
                 .roles(user.getRoles().stream().map(role ->
                         role.getRole()).collect(Collectors.toSet())).build();
         return new ApiResponse<>(true,"Your Profile has been fetched successfully",userDetails);

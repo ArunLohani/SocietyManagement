@@ -60,15 +60,14 @@ public class TenantRoleServiceImpl implements TenantRoleService {
         TenantRoles tenantRoles = null;
         try{
              tenantRoles = tenantRoleQueryBuilder.findById(tenantRoleFilter);
-             tenantRoles.setActive(true);
+             tenantRoles.setIsActive(true);
              tenantRoleRepo.save(tenantRoles);
 
         } catch (Exception e) {
             tenantRoles = new TenantRoles();
             tenantRoles.setTenant(tenant);
             tenantRoles.setRole(role);
-            tenantRoles.setActive(true);
-            System.out.println("tenantRoles " + tenantRoles);
+            tenantRoles.setIsActive(true);
             tenantRoleRepo.save(tenantRoles);
         }
     }
@@ -81,7 +80,7 @@ public class TenantRoleServiceImpl implements TenantRoleService {
         tenantRoleFilter.setRoleId(roleId);
         TenantRoles tenantRoles = tenantRoleQueryBuilder.findById(tenantRoleFilter);
         if(tenantRoles != null){
-            tenantRoles.setActive(false);
+            tenantRoles.setIsActive(false);
             tenantRoleRepo.save(tenantRoles);
         }
     }

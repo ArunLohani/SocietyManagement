@@ -21,4 +21,5 @@ public class VehicleRegisterRequest {
     private String vehicleType;
     private String brand;
     private String model;
+    private Long flat;
 }

@@ -14,10 +14,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class VehicleFilter {
-    private Long id;
-    private String registrationNumber;
-    private String vehicleType;
-    private String brand;
-    private String model;
-    private Long owner;
+        private Long id;
+        private String registrationNumber;
+        private String vehicleType;
+        private String brand;
+        private String model;
+        private Long owner;
+        private Long user;
+        private Boolean isActive = true;
 }

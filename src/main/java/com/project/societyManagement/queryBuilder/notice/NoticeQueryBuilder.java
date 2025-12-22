@@ -63,10 +63,14 @@ public class NoticeQueryBuilder extends AbstractFilterableQueryBuilder<Notice, N
     @Override
     public void applyAuthorization(CriteriaBuilder<Notice> cb){
         Set<String> roles = getLoggedInUserRole();
-        if(roles.contains("SUPER_ADMIN")){
-            return;
+
+        if (roles.contains("ADMIN")){
+            cb.where("n.tenant.id").eq(TenantContextHolder.getCurrentTenant());
+               return;
         }
-        cb.where("n.tenant.id").eq(TenantContextHolder.getCurrentTenant());
+        cb.where("n.tenant.id").eq(TenantContextHolder.getCurrentTenant())
+                .where("n.isPublic").eq(true);
+
     }
 
     @Override
@@ -79,5 +83,8 @@ public class NoticeQueryBuilder extends AbstractFilterableQueryBuilder<Notice, N
         if (filter.getIsExpired()!=null)cb.where("n.isExpired").eq(filter.getIsExpired());
         if (filter.getTenantId()!=null) cb.where("n.tenant.id").eq(filter.getTenantId());
         if (filter.getCategory()!=null) cb.where("n.category").eq(filter.getCategory());
+        if (filter.getSortFilter() != null){
+            applySorting(cb,filter.getSortFilter().getProperty(),filter.getSortFilter().getAsc());
+        }
     }
 }

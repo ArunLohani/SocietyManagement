@@ -47,7 +47,7 @@ public class RoleServiceImpl implements RoleService {
         RoleFilter roleFilter = new RoleFilter();
         roleFilter.setId(id);
         Role role = roleQueryBuilder.findById(roleFilter);
-        role.setActive(false);
+        role.setIsActive(false);
         role = roleRepo.save(role);
         return role;
     }

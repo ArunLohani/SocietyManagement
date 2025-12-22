@@ -90,6 +90,7 @@ public class TenantQueryBuilder extends AbstractFilterableQueryBuilder<Tenant, T
     public void applyFilters(CriteriaBuilder<Tenant> cb,TenantFilter filter){
         if(filter.getId()!=null) cb.where("t.id").eq(filter.getId());
         if(filter.getName() != null) cb.where("t.name").eq(filter.getName());
+        if (filter.getIsActive()!=null) cb.where("t.isActive").eq(filter.getIsActive());
 
     }
 

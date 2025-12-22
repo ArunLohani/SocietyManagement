@@ -74,17 +74,15 @@ public class UserQueryBuilder extends AbstractFilterableQueryBuilder<User,UserFi
     @Override
     public void applyAuthorization(CriteriaBuilder<User> cb){
         Set<String> roles = getLoggedInUserRole();
-        if (roles.contains("ADMIN")){
-            return ;
-        }
-        if (roles.contains("OWNER")){
-             cb.where("u.tenant.id").eq(TenantContextHolder.getCurrentTenant());
-             return;
-        }
-        if (roles.contains("TENANT")){
-            cb.where("u.tenant.id").eq(TenantContextHolder.getCurrentTenant());
+
+        if (roles.contains("SUPER_ADMIN")){
             return;
         }
+
+        if (TenantContextHolder.getCurrentTenant() != null){
+            cb.where("u.tenant.id").eq(TenantContextHolder.getCurrentTenant());
+        }
+
     }
 
     @Override
@@ -92,6 +90,7 @@ public class UserQueryBuilder extends AbstractFilterableQueryBuilder<User,UserFi
         if(filter.getUserId()!=null) cb.where("u.id").eq(filter.getUserId());
         if(filter.getName() != null) cb.where("u.name").like().value("%"+filter.getName()+"%").noEscape();
         if(filter.getEmail() != null) cb.where("u.email").like().value("%"+filter.getEmail()+"%").noEscape();
+        if (filter.getIsActive()!=null) cb.where("u.isActive").eq(filter.getIsActive());
         if (filter.getTenantId() != null) {
             if (filter.getTenantId() == 0) {
                 cb.where("u.tenant").isNull();

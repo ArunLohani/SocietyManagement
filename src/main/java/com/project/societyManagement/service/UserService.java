@@ -13,6 +13,7 @@ public interface UserService {
     public User findUserByEmail(String email);
     public User findUserById(Long id);
     public Page<User> searchUser(String name, String email, Pageable pageable);
+    public List<User> searchUserList(String name, String email);
     public Boolean findExistingUserByEmail(String email);
     public UserDetails updateUser(User user);
     public User findUserByEmailWithoutAuth(String email);

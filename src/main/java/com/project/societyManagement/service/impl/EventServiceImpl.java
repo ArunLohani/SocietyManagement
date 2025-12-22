@@ -8,11 +8,13 @@ import com.project.societyManagement.entity.Tenant;
 import com.project.societyManagement.entity.User;
 import com.project.societyManagement.queryBuilder.event.EventFilter;
 import com.project.societyManagement.queryBuilder.event.EventQueryBuilder;
-import com.project.societyManagement.repository.EventRepository;
+import com.project.societyManagement.repository.EventRepo;
 import com.project.societyManagement.service.EventService;
+import com.project.societyManagement.service.NotificationService;
 import com.project.societyManagement.service.TenantService;
 import com.project.societyManagement.service.UserService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,15 +24,17 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Set;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class EventServiceImpl implements EventService {
 
-    private final EventRepository eventRepository;
+    private final EventRepo eventRepo;
     private final EventQueryBuilder eventQueryBuilder;
     private final ModelMapper modelMapper;
     private final TenantService tenantService;
     private final UserService userService;
+    private final NotificationService notificationService;
 
     public EventResponse createEvent(EventCreationRequest eventRequest){
 
@@ -40,7 +44,13 @@ public class EventServiceImpl implements EventService {
         User user = userService.findUserById(eventRequest.getOrganizedBy());
         event.setOrganizedBy(user);
 
-        event = eventRepository.save(event);
+        event = eventRepo.save(event);
+        notificationService.notifySociety(
+                event.getTenant().getId(),
+                "New Event Announced",
+                "A new event has been scheduled: " + event.getName()
+                        + ". Please check the event details for more information.","/menu/events/"+event.getId()
+        );
         return modelMapper.map(eventQueryBuilder,EventResponse.class);
     }
 
@@ -54,7 +64,7 @@ public class EventServiceImpl implements EventService {
         event.setEndDateTime(eventRequest.getEndDateTime());
         event.setMaxParticipants(eventRequest.getMaxParticipants());
         event.setRegistrationRequired(eventRequest.getRegistrationRequired());
-        event = eventRepository.save(event);
+        event = eventRepo.save(event);
         return modelMapper.map(eventQueryBuilder,EventResponse.class);
     }
 
@@ -63,7 +73,7 @@ public class EventServiceImpl implements EventService {
         eventFilter.setId(eventId);
         Event event = eventQueryBuilder.findById(eventFilter);
         event.setIsActive(false);
-        eventRepository.save(event);
+        eventRepo.save(event);
     }
 
     public Event getEventById(Long eventId){
@@ -98,7 +108,7 @@ public class EventServiceImpl implements EventService {
         try{
             if (event.getMaxParticipants() > event.getParticipants().size()){
                 event.getParticipants().add(user);
-                event = eventRepository.save(event);
+                event = eventRepo.save(event);
                 return "User have participated in the event.";
             }
 
@@ -115,11 +125,11 @@ public class EventServiceImpl implements EventService {
        try{
            if (event.getMaxParticipants() > event.getParticipants().size()){
                event.getParticipants().add(user);
-               event = eventRepository.save(event);
+               event = eventRepo.save(event);
                 return "You have participated in the event.";
            }
 
-           throw new Exception("No of Participants have exceeded the limit");
+           throw new Exception("Number of Participants have exceeded the limit");
        } catch (Exception e) {
            return "No of Participants have exceeded the limit";
        }
@@ -130,8 +140,10 @@ public class EventServiceImpl implements EventService {
         User user = userService.findUserById(userId);
    try{
        if (event.getParticipants().contains(user)){
-           event.getParticipants().remove(user);
-           event = eventRepository.save(event);
+           List<User> participants = event.getParticipants();
+           participants.remove(user);
+           event.setParticipants(participants);
+           event = eventRepo.save(event);
            return "You have been removed from the event.";
        }
 
@@ -146,10 +158,14 @@ public class EventServiceImpl implements EventService {
     public String removeParticipation(Long eventId)  {
         Event event = getEventById(eventId);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        user = userService.findUserById(user.getId());
         try{
+
             if (event.getParticipants().contains(user)){
-                event.getParticipants().remove(user);
-                event = eventRepository.save(event);
+                List<User> participants = event.getParticipants();
+                participants.remove(user);
+                event.setParticipants(participants);
+                event = eventRepo.save(event);
                 return "You have been removed from the event.";
             }
 
