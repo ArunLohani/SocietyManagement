@@ -12,8 +12,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-
 import java.util.List;
+
 @Slf4j
 public abstract class AbstractFilterableQueryBuilder<T,F> implements BaseQueryBuilder<T,F> {
 
@@ -64,6 +64,7 @@ public abstract class AbstractFilterableQueryBuilder<T,F> implements BaseQueryBu
     private InsertCriteriaBuilder<T> buildInsertCriteriaBuilder(T entity){
         InsertCriteriaBuilder<T> icb = cbf.insert(entityManager,getEntityClass())
                 .from(getEntityClass(),getEntityAlias());
+
         return icb;
     }
     protected abstract Class<T> getEntityClass();
@@ -80,7 +81,4 @@ public abstract class AbstractFilterableQueryBuilder<T,F> implements BaseQueryBu
             cb.orderByDesc(getEntityAlias() + "." + property);
         }
     }
-
-
-
 }

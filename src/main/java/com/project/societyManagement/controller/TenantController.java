@@ -50,4 +50,15 @@ public class TenantController {
         ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "User assigned to tenant successfully", response);
         return new ResponseEntity(apiResponse, HttpStatus.OK);
     }
+
+    @PostMapping("/removeUser")
+    @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
+    public ResponseEntity<ApiResponse<Tenant>> removeUserFromTenant(@RequestBody UserAssignmentRequest request) {
+        Tenant response = tenantService.removeUserFromTenant(request.getTenantId(), request.getUserId());
+        ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "User removed from tenant successfully", response);
+        return new ResponseEntity(apiResponse, HttpStatus.OK);
+    }
+
+
+
 }

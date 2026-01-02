@@ -91,4 +91,9 @@ public class FlatMembersServiceImpl implements FlatMembersService {
         flatMember.setIsActive(false);
         return flatMembersRepo.save(flatMember);
     }
+
+    @Override
+    public List<FlatMember> getFlatMembers(FlatMembersFilter filter) {
+        return flatMembersQueryBuilder.search(filter);
+    }
 }

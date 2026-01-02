@@ -1,6 +1,7 @@
 package com.project.societyManagement.service.impl;
 
 import com.project.societyManagement.dto.MaintenancePayment.PaymentCalculationDTO;
+import com.project.societyManagement.dto.MaintenancePayment.PaymentReceiptDTO;
 import com.project.societyManagement.dto.MaintenancePayment.PaymentRequestDTO;
 import com.project.societyManagement.dto.MaintenancePayment.PaymentResponseDTO;
 import com.project.societyManagement.entity.Flat;
@@ -26,6 +27,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.UUID;
 
+
 @Service
 @RequiredArgsConstructor
 public class MaintenancePaymentServiceImpl implements MaintenancePaymentService {
@@ -36,13 +38,14 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
     private final TenantCategoryPricingService tenantCategoryPricingService;
     private final EmailService emailService;
     private final NotificationService notificationService;
+    private final EmailTemplateService emailTemplateService;
 
     private static final int GRACE_PERIOD_DAYS = 10;
 
     public MaintenancePayment getActivePaymentForFlat(Long flatId, LocalDate date) {
         MaintenancePaymentFilter filter = new MaintenancePaymentFilter();
         filter.setFlat(flatId);
-        filter.setActivePaymentDate(date); // This checks if payment covers this date
+        filter.setActivePaymentDate(date);
         filter.setStatus("COMPLETED");
         filter.setIsActive(true);
 
@@ -76,11 +79,10 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
         );
     }
 
-    public MaintenancePayment findPaymentById(Long paymentId){
+    public MaintenancePayment findPaymentById(Long paymentId) {
         MaintenancePaymentFilter maintenancePaymentFilter = new MaintenancePaymentFilter();
         maintenancePaymentFilter.setId(paymentId);
-       return maintenancePaymentQueryBuilder.findById(maintenancePaymentFilter);
-
+        return maintenancePaymentQueryBuilder.findById(maintenancePaymentFilter);
     }
 
     public Integer calculateOverdueDays(LocalDate dueDate) {
@@ -93,22 +95,22 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
         return 0;
     }
 
-    public Double calculatePenalty(Flat flat , LocalDate dueDate){
+    public Double calculatePenalty(Flat flat, LocalDate dueDate) {
 
         LocalDate today = LocalDate.now();
 
-        if (today.isAfter(dueDate)){
+        if (today.isAfter(dueDate)) {
 
             long overdueDays = calculateOverdueDays(dueDate);
 
-            if (overdueDays > 0){
+            if (overdueDays > 0) {
                 TenantCategoryPricingFilter tenantCategoryPricingFilter = new TenantCategoryPricingFilter();
                 tenantCategoryPricingFilter.setTenant(flat.getTenant().getId());
                 tenantCategoryPricingFilter.setCategory(flat.getCategory().name());
                 List<TenantCategoryPricing> pricingList = tenantCategoryPricingService
                         .searchTenantCategoryPricing(tenantCategoryPricingFilter);
 
-                if(pricingList.isEmpty()) {
+                if (pricingList.isEmpty()) {
                     throw new EntityNotFoundException(
                             "Pricing not configured for category: " + flat.getCategory());
                 }
@@ -124,13 +126,11 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
         return 0.0;
     }
 
-    public PaymentCalculationDTO calculatePayment(Long flatId , BillingCycle billingCycle){
+    public PaymentCalculationDTO calculatePayment(Long flatId, BillingCycle billingCycle) {
         Flat flat = flatService.getFlatById(flatId);
 
-        // Billing starts from 1st of current month
         LocalDate startDate = LocalDate.now().withDayOfMonth(1);
 
-        // Check if there's already an active payment on the start date
         MaintenancePayment existingPayment = getActivePaymentForFlat(flatId, startDate);
         if (existingPayment != null) {
             throw new IllegalStateException(
@@ -151,7 +151,7 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
         List<TenantCategoryPricing> pricingList = tenantCategoryPricingService
                 .searchTenantCategoryPricing(tenantCategoryPricingFilter);
 
-        if(pricingList.isEmpty()) {
+        if (pricingList.isEmpty()) {
             throw new EntityNotFoundException(
                     "Pricing not configured for category: " + flat.getCategory());
         }
@@ -161,13 +161,10 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
         Integer monthsCovered = billingCycle.getMonths();
         Double baseAmount = monthlyFee * monthsCovered;
 
-
         LocalDate endDate = startDate.plusMonths(monthsCovered).minusDays(1);
 
-        // Due date is 10 days from the start of billing cycle
         LocalDate dueDate = startDate.plusDays(GRACE_PERIOD_DAYS);
 
-        // Calculate penalty if already past due date
         Double penalty = calculatePenalty(flat, dueDate);
         Double finalAmount = baseAmount + penalty;
 
@@ -182,7 +179,7 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
     }
 
     @Transactional
-    public PaymentResponseDTO initiatePayment(PaymentRequestDTO paymentRequest , Authentication authentication){
+    public PaymentResponseDTO initiatePayment(PaymentRequestDTO paymentRequest, Authentication authentication) {
         User user = (User) authentication.getPrincipal();
         Flat flat = flatService.getFlatById(paymentRequest.getFlatId());
 
@@ -229,20 +226,17 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
         );
     }
 
-
     @Transactional
-    public PaymentResponseDTO completePayment(Long paymentId,String paymentMethod,String transactionId, String gatewayResponse) {
+    public PaymentResponseDTO completePayment(Long paymentId, String paymentMethod, String transactionId, String gatewayResponse) {
         MaintenancePayment payment = findPaymentById(paymentId);
 
-        if(payment == null) {
+        if (payment == null) {
             throw new EntityNotFoundException("Payment not found with id: " + paymentId);
         }
 
-        if(payment.getStatus() == PaymentStatus.COMPLETED) {
+        if (payment.getStatus() == PaymentStatus.COMPLETED) {
             throw new IllegalStateException("Payment already completed");
         }
-
-
 
         payment.setPaymentMethod(paymentMethod);
         payment.setStatus(PaymentStatus.COMPLETED);
@@ -251,8 +245,8 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
         payment.setPaymentGatewayResponse(gatewayResponse);
         payment = maintenancePaymentRepo.save(payment);
 
-        // Send confirmation email
-        sendPaymentConfirmation(payment.getUser());
+        // Send payment receipt via email
+        sendPaymentReceipt(payment);
 
         return new PaymentResponseDTO(
                 payment.getId(),
@@ -271,11 +265,11 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
     public void failPayment(Long paymentId, String reason) {
         MaintenancePayment payment = findPaymentById(paymentId);
 
-        if(payment == null) {
+        if (payment == null) {
             throw new EntityNotFoundException("Payment not found with id: " + paymentId);
         }
 
-        if(payment.getStatus() == PaymentStatus.COMPLETED) {
+        if (payment.getStatus() == PaymentStatus.COMPLETED) {
             throw new IllegalStateException("Cannot fail a completed payment");
         }
 
@@ -283,26 +277,64 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
         payment.setPaymentGatewayResponse(reason);
         maintenancePaymentRepo.save(payment);
 
-        // Send failure notification
         sendPaymentFailure(payment.getUser());
     }
 
-    public List<MaintenancePayment> searchMaintenancePayment(MaintenancePaymentFilter maintenancePaymentFilter){
+    public List<MaintenancePayment> searchMaintenancePayment(MaintenancePaymentFilter maintenancePaymentFilter) {
         return maintenancePaymentQueryBuilder.search(maintenancePaymentFilter);
     }
 
-    public Page<MaintenancePayment> searchMaintenancPaymentPaginated(MaintenancePaymentFilter filter, Pageable pageable){
-        return maintenancePaymentQueryBuilder.searchPaginated(filter,pageable);
+    public Page<MaintenancePayment> searchMaintenancPaymentPaginated(MaintenancePaymentFilter filter, Pageable pageable) {
+        return maintenancePaymentQueryBuilder.searchPaginated(filter, pageable);
     }
-
-
 
     private String generateReferenceNumber() {
         return "PAY-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase();
     }
 
     @Transactional
-    public void sendPaymentReminder(User user){
+    public void sendPaymentReceipt(MaintenancePayment payment) {
+        User user = payment.getUser();
+        Flat flat = payment.getFlat();
+        String flatNumber = flat.getBlock() + flat.getNumber();
+        PaymentReceiptDTO receipt = PaymentReceiptDTO.builder()
+                .referenceNumber(payment.getReferenceNumber())
+                .transactionId(payment.getTransactionId())
+                .paymentDate(payment.getPaymentDate())
+                .paymentMethod(payment.getPaymentMethod())
+                .userName(user.getName())
+                .userEmail(user.getEmail())
+                .userPhone(user.getPhoneNumber())
+                .flatNumber(flatNumber)
+                .category(flat.getCategory().name())
+                .billingStartDate(payment.getBillingStartDate())
+                .billingEndDate(payment.getBillingEndDate())
+                .billingCycle(payment.getBillingCycle().name())
+                .monthsCovered(payment.getMonthsCovered())
+                .monthlyFee(payment.getMonthlyFee())
+                .baseAmount(payment.getBaseAmount())
+                .penaltyAmount(payment.getPenaltyAmount())
+                .finalAmount(payment.getFinalAmount())
+                .isOverdue(payment.getIsOverdue())
+                .overdueDays(payment.getOverdueDays())
+                .societyName("Society Management System")
+                .build();
+
+        String htmlContent = emailTemplateService.generatePaymentReceiptHtml(receipt);
+        String subject = "Payment Receipt - " + payment.getReferenceNumber();
+
+        emailService.sendHtmlEmail(user.getEmail(), subject, htmlContent);
+
+        String notificationMessage = String.format(
+                "Payment of ₹%.2f completed successfully. Receipt: %s",
+                payment.getFinalAmount(),
+                payment.getReferenceNumber()
+        );
+        notificationService.notifyUser(user.getId(), subject, notificationMessage);
+    }
+
+    @Transactional
+    public void sendPaymentReminder(User user) {
         String subject = "Maintenance Fee Payment Reminder";
         String message = "Dear " + user.getName() + ",\n\n"
                 + "This is a reminder that your maintenance fee for the current billing cycle is pending. "
@@ -312,8 +344,9 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
         emailService.sendSimpleEmail(user.getEmail(), subject, message);
         notificationService.notifyUser(user.getId(), subject, message);
     }
+
     @Transactional
-    public void sendPaymentExpirationReminder(User user){
+    public void sendPaymentExpirationReminder(User user) {
         String subject = "Maintenance Fee Expiring Soon – Renewal Reminder";
 
         String message = "Dear " + user.getName() + ",\n\n"
@@ -329,7 +362,7 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
     }
 
     @Transactional
-    public void sendOverdueReminder(User user, Integer overdueDays, Double penalty){
+    public void sendOverdueReminder(User user, Integer overdueDays, Double penalty) {
         String subject = "Urgent: Payment Overdue - Day " + overdueDays;
         String message = "Dear " + user.getName() + ",\n\n"
                 + "Your maintenance payment is now " + overdueDays + " days overdue. "
@@ -342,8 +375,7 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
     }
 
     @Transactional
-    public void sendPaymentConfirmation(User user){
-
+    public void sendPaymentConfirmation(User user) {
         String subject = "Payment Successful – Thank You!";
         String message = "Dear " + user.getName() + ",\n\n"
                 + "We have successfully received your maintenance fee payment. "
@@ -356,8 +388,7 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
     }
 
     @Transactional
-    public void sendPaymentFailure(User user){
-
+    public void sendPaymentFailure(User user) {
         String subject = "Payment Failed – Action Required";
         String message = "Dear " + user.getName() + ",\n\n"
                 + "Your recent attempt to pay the maintenance fee was unsuccessful. "
@@ -367,6 +398,5 @@ public class MaintenancePaymentServiceImpl implements MaintenancePaymentService 
         emailService.sendSimpleEmail(user.getEmail(), subject, message);
         notificationService.notifyUser(user.getId(), subject, message);
     }
-
 
 }

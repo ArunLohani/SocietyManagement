@@ -6,10 +6,7 @@ import com.project.societyManagement.queryBuilder.tenantRole.TenantRoleQueryBuil
 import com.project.societyManagement.queryBuilder.tenantRoleMenu.TenantRoleMenuFilter;
 import com.project.societyManagement.queryBuilder.tenantRoleMenu.TenantRoleMenuQueryBuilder;
 import com.project.societyManagement.repository.TenantRoleMenuRepo;
-import com.project.societyManagement.service.ActionService;
-import com.project.societyManagement.service.MenuService;
-import com.project.societyManagement.service.TenantRoleMenuActionService;
-import com.project.societyManagement.service.TenantRoleMenuService;
+import com.project.societyManagement.service.*;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -32,6 +29,8 @@ public class TenantRoleMenuServiceImpl implements TenantRoleMenuService {
     private ActionService actionService;
     @Autowired
     private TenantRoleMenuActionService tenantRoleMenuActionService;
+    @Autowired
+    private UserService userService;
 
     public TenantRoleMenu assignMenuToTenantRole(Long tenantRoleId, Long menuId) {
         log.info("Assigning menu {} to tenant role {}", menuId, tenantRoleId);
@@ -147,6 +146,37 @@ public class TenantRoleMenuServiceImpl implements TenantRoleMenuService {
 
         TenantRoleFilter tenantRoleFilter = new TenantRoleFilter();
         tenantRoleFilter.setTenantId(tenantId);
+
+        for (Role role : user.getRoles()) {
+            tenantRoleFilter.setRoleId(role.getId());
+
+            List<TenantRoles> tenantRoles = tenantRoleQueryBuilder.search(tenantRoleFilter);
+            if (tenantRoles.isEmpty()) continue;
+            for (TenantRoles tenantRole : tenantRoles) {
+                if (hasMenuAccess(tenantRole.getId(), menu.getId())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean canAccess(String menuName,Long userId){
+
+        Menu menu = menuService.findMenuByName(menuName);
+        if (menu == null) {
+            log.warn("Menu '{}' not found", menuName);
+            return false;
+        }
+
+        User user = userService.findUserById(userId);
+        if (user == null) {
+            return false;
+        }
+
+        TenantRoleFilter tenantRoleFilter = new TenantRoleFilter();
+        tenantRoleFilter.setTenantId(user.getTenant().getId());
 
         for (Role role : user.getRoles()) {
             tenantRoleFilter.setRoleId(role.getId());

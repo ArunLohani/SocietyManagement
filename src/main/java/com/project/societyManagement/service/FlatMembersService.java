@@ -16,4 +16,5 @@ public interface FlatMembersService {
     public FlatMember addMemberToFlat(FlatMemberAddRequest flatMemberAddRequest);
     public FlatMember changeFlatMemberType(Long id , FlatMembershipType type);
     public FlatMember removeFlatMember(Long id);
+    public List<FlatMember> getFlatMembers(FlatMembersFilter filter);
 }

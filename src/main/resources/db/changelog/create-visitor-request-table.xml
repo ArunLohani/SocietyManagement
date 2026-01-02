@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet id="creating-visitor-requests-table" author="Arun" >
+        <sql>
+            CREATE TABLE visitor_requests (
+            id BIGSERIAL PRIMARY KEY,
+
+            visitor_name VARCHAR(200) NOT NULL,
+            visitor_phone VARCHAR(50) NOT NULL,
+            visitor_email VARCHAR(200) NOT NULL,
+            purpose VARCHAR(500),
+            rejection_reason VARCHAR(500),
+
+            expected_in TIMESTAMPTZ,
+            expected_out TIMESTAMPTZ,
+
+            -- OTP-based validation
+            otp_hash VARCHAR(255),
+            otp_generated_at TIMESTAMPTZ,
+            otp_expires_at TIMESTAMPTZ,
+
+            -- Status
+            status VARCHAR(50) NOT NULL,
+
+            flat_id BIGINT NOT NULL,
+            requested_by_user_id BIGINT NOT NULL,
+
+            approved_at TIMESTAMPTZ,
+            entered_at TIMESTAMPTZ,
+            exited_at TIMESTAMPTZ,
+
+            -- Auditing (from AuditableEntity)
+            created_by BIGINT,
+            created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+            updated_by BIGINT,
+            updated_at TIMESTAMPTZ,
+            is_active BOOLEAN DEFAULT TRUE,
+
+            CONSTRAINT fk_visitor_request_flat
+            FOREIGN KEY (flat_id) REFERENCES flats (id),
+
+            CONSTRAINT fk_visitor_request_user
+            FOREIGN KEY (requested_by_user_id) REFERENCES users (id)
+            );
+        </sql>
+    </changeSet>
+    <changeSet id="changing-otp-column-name-table" author="Arun" >
+        <sql>
+            ALTER TABLE visitor_requests
+            RENAME COLUMN otp_hash TO otp;
+
+
+        </sql>
+    </changeSet>
+    <changeSet id="adding-guest-type-column-table" author="Arun" >
+        <sql>
+            ALTER TABLE visitor_requests
+            ADD COLUMN type varchar(50);
+
+
+        </sql>
+    </changeSet>
+</databaseChangeLog>

@@ -1,5 +1,6 @@
 package com.project.societyManagement.service.impl;
 
+import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.dto.User.UserDetails;
 import com.project.societyManagement.entity.User;
 import com.project.societyManagement.exception.UserNotFoundException;
@@ -8,6 +9,7 @@ import com.project.societyManagement.queryBuilder.user.UserQueryBuilder;
 import com.project.societyManagement.repository.UserRepo;
 import com.project.societyManagement.service.UserService;
 import com.project.societyManagement.util.ValidationUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -18,6 +20,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 public class UserServiceImpl implements UserService {
     @Autowired
@@ -95,6 +98,7 @@ public class UserServiceImpl implements UserService {
         UserFilter userFilter = new UserFilter();
         userFilter.setEmail(email);
         userFilter.setName(name);
+        userFilter.setTenantId(TenantContextHolder.getCurrentTenant());
         return userQueryBuilder.search(userFilter);
     }
 
@@ -102,7 +106,10 @@ public class UserServiceImpl implements UserService {
         UserFilter userFilter = new UserFilter();
         userFilter.setTenantId(0L);
         List<User> users =  userQueryBuilder.search(userFilter);
+
         List<UserDetails> userDetails = users.stream()
+                .filter(user -> user.getRoles().stream()
+                        .noneMatch(role -> "SUPER_ADMIN".equals(role.getRole())))
                 .map(user ->
                         UserDetails.builder().
                                 id(user.getId()).

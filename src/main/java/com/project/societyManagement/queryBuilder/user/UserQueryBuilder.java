@@ -75,7 +75,7 @@ public class UserQueryBuilder extends AbstractFilterableQueryBuilder<User,UserFi
     public void applyAuthorization(CriteriaBuilder<User> cb){
         Set<String> roles = getLoggedInUserRole();
 
-        if (roles.contains("SUPER_ADMIN")){
+        if (roles.contains("SUPER_ADMIN") || roles.contains("ADMIN") ){
             return;
         }
 

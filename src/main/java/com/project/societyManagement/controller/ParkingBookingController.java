@@ -57,10 +57,10 @@ public class ParkingBookingController {
     }
     @RequiresPermission(api="SEARCH_PARKING_REQUESTS")
     @PostMapping("/search")
-    public ResponseEntity<Page<ParkingRequest>> searchPaginated(@RequestBody  ParkingRequestFilter filter , @RequestParam(defaultValue = "0") Integer page,
-                                                                @RequestParam(defaultValue = "6") Integer limit){
+    public ResponseEntity<Page<ParkingRequest>> searchPaginated(@RequestBody  ParkingRequestFilter filter , @RequestParam(defaultValue = "0") Integer pageNumber,
+                                                                @RequestParam(defaultValue = "6") Integer pageSize){
 
-        Pageable pageable = PageRequest.of(page,limit);
+        Pageable pageable = PageRequest.of(pageNumber,pageSize);
         Page<ParkingRequest> requests= parkingRequestService.searchPaginated(filter,pageable);
         return ResponseEntity.ok(requests);
     }

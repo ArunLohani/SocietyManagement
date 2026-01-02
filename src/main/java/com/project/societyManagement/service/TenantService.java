@@ -11,4 +11,5 @@ public interface TenantService {
     public List<Tenant> getAllTenants();
     public Tenant createTenant(String tenant);
     public Tenant addUserToTenant(Long tenantId , Long userId);
+    public Tenant removeUserFromTenant(Long tenantId , Long userId);
 }

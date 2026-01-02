@@ -9,10 +9,14 @@ import com.project.societyManagement.queryBuilder.tenantRoleMenuAction.TenantRol
 import com.project.societyManagement.repository.TenantRepo;
 import com.project.societyManagement.service.TenantService;
 import com.project.societyManagement.service.UserService;
+import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class TenantServiceImpl implements TenantService {
@@ -62,5 +66,30 @@ public class TenantServiceImpl implements TenantService {
         tenant = tenantRepo.save(tenant);
         return tenant;
     }
+    @Override
+    @Transactional
+    public Tenant removeUserFromTenant(Long tenantId, Long userId) {
+
+        TenantFilter tenantFilter = new TenantFilter();
+        tenantFilter.setId(tenantId);
+        Tenant tenant = tenantQueryBuilder.findById(tenantFilter);
+        User user = userService.findUserById(userId);
+        // Retain SUPER_ADMIN only if present
+        Set<Role> updatedRoles = user.getRoles().stream()
+                .filter(role -> "SUPER_ADMIN".equals(role.getRole()))
+                .collect(Collectors.toSet());
+        // If SUPER_ADMIN not present → roles become empty
+        user.setRoles(updatedRoles);
+        // Remove tenant mapping
+        user.setTenant(null);
+        userService.updateUser(user);
+        // Remove user from tenant residents
+        tenant.getResidents().removeIf(u -> u.getId().equals(userId));
+
+        return tenant;
+    }
+
+
+
 
 }
