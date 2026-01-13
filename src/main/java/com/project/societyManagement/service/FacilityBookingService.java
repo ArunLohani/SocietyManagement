@@ -1,13 +1,9 @@
 package com.project.societyManagement.service;
 
-import com.project.societyManagement.entity.Facility;
 import com.project.societyManagement.entity.FacilityBooking;
-import com.project.societyManagement.entity.User;
-import com.project.societyManagement.entity.types.BookingStatus;
 import com.project.societyManagement.queryBuilder.facilityBooking.FacilityBookingFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 
 public interface FacilityBookingService {
 

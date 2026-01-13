@@ -1,16 +1,12 @@
 package com.project.societyManagement.service;
 
-import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.dto.Event.EventCreationRequest;
 import com.project.societyManagement.dto.Event.EventResponse;
 import com.project.societyManagement.entity.Event;
-import com.project.societyManagement.entity.Tenant;
 import com.project.societyManagement.entity.User;
 import com.project.societyManagement.queryBuilder.event.EventFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
-
 import java.util.List;
 import java.util.Set;
 

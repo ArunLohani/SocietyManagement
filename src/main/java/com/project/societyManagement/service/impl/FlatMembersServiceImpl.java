@@ -11,6 +11,7 @@ import com.project.societyManagement.repository.FlatMembersRepo;
 import com.project.societyManagement.service.FlatMembersService;
 import com.project.societyManagement.service.FlatService;
 import com.project.societyManagement.service.UserService;
+import com.project.societyManagement.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ public class FlatMembersServiceImpl implements FlatMembersService {
     private final FlatMembersRepo flatMembersRepo;
     private final FlatService flatService;
     private final UserService userService;
+    private final ValidationUtil validationUtil;
 
     public FlatMember flatMemberExists(Long flatId , Long userId){
         FlatMembersFilter filter = new FlatMembersFilter();
@@ -68,6 +70,7 @@ public class FlatMembersServiceImpl implements FlatMembersService {
         return flatMembersRepo.save(flatMember);
     }
     public FlatMember addMemberToFlat(FlatMemberAddRequest flatMemberAddRequest){
+        validationUtil.validate(flatMemberAddRequest);
         FlatMember flatMember = flatMemberExistsIncludeInactive(flatMemberAddRequest.getFlatId(),flatMemberAddRequest.getUserId());
         if (flatMember!=null){
             flatMember.setType(flatMemberAddRequest.getType());

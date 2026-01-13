@@ -5,7 +5,6 @@ import com.project.societyManagement.entity.Action;
 import com.project.societyManagement.queryBuilder.action.ActionFilter;
 import com.project.societyManagement.service.ActionService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;

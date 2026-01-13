@@ -2,7 +2,6 @@ package com.project.societyManagement.service.impl;
 
 import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.dto.TenantCategoryPricing.TenantCategoryPricingResponse;
-import com.project.societyManagement.entity.Flat;
 import com.project.societyManagement.entity.Tenant;
 import com.project.societyManagement.entity.TenantCategoryPricing;
 import com.project.societyManagement.entity.types.FlatCategory;
@@ -11,6 +10,7 @@ import com.project.societyManagement.queryBuilder.tenantCategoryPricing.TenantCa
 import com.project.societyManagement.repository.TenantCategoryPricingRepo;
 import com.project.societyManagement.service.TenantCategoryPricingService;
 import com.project.societyManagement.service.TenantService;
+import com.project.societyManagement.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.Arrays;
@@ -25,8 +25,10 @@ public class TenantCategoryPricingServiceImpl implements TenantCategoryPricingSe
     private final TenantCategoryPricingQueryBuilder tenantCategoryPricingQueryBuilder;
     private final TenantCategoryPricingRepo tenantCategoryPricingRepo;
     private final TenantService tenantService;
+    private final ValidationUtil validationUtil;
 
     public TenantCategoryPricing updatePricing(String category , Double amount){
+        ;
         TenantCategoryPricingFilter filter = new TenantCategoryPricingFilter();
         filter.setTenant(TenantContextHolder.getCurrentTenant());
         filter.setCategory(category);

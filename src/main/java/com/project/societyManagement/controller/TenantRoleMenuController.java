@@ -1,14 +1,14 @@
 package com.project.societyManagement.controller;
+
 import com.project.societyManagement.dto.Api.ApiResponse;
 import com.project.societyManagement.entity.TenantRoleMenu;
 import com.project.societyManagement.service.TenantRoleMenuService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+
 @Slf4j
 @RestController
 @RequestMapping("/tenantRoleMenu")

@@ -13,6 +13,7 @@ import com.project.societyManagement.service.EventService;
 import com.project.societyManagement.service.NotificationService;
 import com.project.societyManagement.service.TenantService;
 import com.project.societyManagement.service.UserService;
+import com.project.societyManagement.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
@@ -20,7 +21,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
 import java.util.Set;
 
@@ -35,9 +35,10 @@ public class EventServiceImpl implements EventService {
     private final TenantService tenantService;
     private final UserService userService;
     private final NotificationService notificationService;
+    private final ValidationUtil validationUtil;
 
     public EventResponse createEvent(EventCreationRequest eventRequest){
-
+        validationUtil.validate(eventRequest);
         Event event = modelMapper.map(eventRequest, Event.class);
         Tenant tenant = tenantService.findTenantById(TenantContextHolder.getCurrentTenant());
         event.setTenant(tenant);
@@ -55,6 +56,7 @@ public class EventServiceImpl implements EventService {
     }
 
     public EventResponse updateEvent(Long eventId,EventCreationRequest eventRequest){
+        validationUtil.validate(eventRequest);
         Event event = getEventById(eventId);
         event.setName(eventRequest.getName());
         event.setDescription(eventRequest.getDescription());

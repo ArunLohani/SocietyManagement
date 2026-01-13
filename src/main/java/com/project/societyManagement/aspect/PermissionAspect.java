@@ -4,7 +4,6 @@ import com.project.societyManagement.annotations.RequiresPermission;
 import com.project.societyManagement.entity.User;
 import com.project.societyManagement.service.PermissionService;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.buf.UEncoder;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.security.access.AccessDeniedException;

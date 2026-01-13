@@ -9,6 +9,7 @@ import com.project.societyManagement.queryBuilder.parkingSlot.ParkingSlotQueryBu
 import com.project.societyManagement.repository.ParkingSlotRepo;
 import com.project.societyManagement.service.ParkingSlotService;
 import com.project.societyManagement.service.TenantService;
+import com.project.societyManagement.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -23,6 +24,7 @@ public class ParkingSlotServiceImpl implements ParkingSlotService {
     private final ParkingSlotRepo parkingSlotRepo;
     private final ModelMapper modelMapper;
     private final TenantService tenantService;
+    private final ValidationUtil validationUtil;
 
     public  ParkingSlot getParkingSlotById(Long id){
         ParkingSlotFilter parkingSlotFilter = new ParkingSlotFilter();
@@ -31,6 +33,7 @@ public class ParkingSlotServiceImpl implements ParkingSlotService {
     }
 
     public ParkingSlot registerParkingSlot(ParkingSlotRegisterRequest parkingSlotRegisterRequest){
+        validationUtil.validate(parkingSlotRegisterRequest);
         Tenant tenant = tenantService.findTenantById(TenantContextHolder.getCurrentTenant());
         ParkingSlot parkingSlot = ParkingSlot.builder().slotNumber(parkingSlotRegisterRequest.getSlotNumber())
                 .area(parkingSlotRegisterRequest.getArea())
@@ -41,6 +44,7 @@ public class ParkingSlotServiceImpl implements ParkingSlotService {
     }
 
     public ParkingSlot updateParkingSlot(Long id , ParkingSlotRegisterRequest parkingSlotRegisterRequest){
+        validationUtil.validate(parkingSlotRegisterRequest);
         ParkingSlot parkingSlot = getParkingSlotById(id);
         parkingSlot.setSlotNumber(parkingSlotRegisterRequest.getSlotNumber());
         parkingSlot.setArea(parkingSlotRegisterRequest.getArea());

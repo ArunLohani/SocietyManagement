@@ -2,7 +2,6 @@ package com.project.societyManagement.service;
 
 import com.project.societyManagement.dto.TenantCategoryPricing.TenantCategoryPricingResponse;
 import com.project.societyManagement.entity.TenantCategoryPricing;
-import com.project.societyManagement.entity.types.FlatCategory;
 import com.project.societyManagement.queryBuilder.tenantCategoryPricing.TenantCategoryPricingFilter;
 
 import java.util.List;

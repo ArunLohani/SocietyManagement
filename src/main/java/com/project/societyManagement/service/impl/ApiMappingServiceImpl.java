@@ -1,6 +1,5 @@
 package com.project.societyManagement.service.impl;
 
-import com.project.societyManagement.entity.Action;
 import com.project.societyManagement.entity.ApiPermissionMapping;
 import com.project.societyManagement.queryBuilder.apiPermissionMapping.ApiPermissionMappingFilter;
 import com.project.societyManagement.queryBuilder.apiPermissionMapping.ApiPermissionMappingQueryBuilder;

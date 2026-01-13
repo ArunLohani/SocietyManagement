@@ -7,16 +7,12 @@ import com.project.societyManagement.entity.Flat;
 import com.project.societyManagement.entity.MaintenancePayment;
 import com.project.societyManagement.entity.User;
 import com.project.societyManagement.entity.types.BillingCycle;
-import com.project.societyManagement.entity.types.PaymentStatus;
 import com.project.societyManagement.queryBuilder.maintenancePayment.MaintenancePaymentFilter;
-import jakarta.transaction.Transactional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
-
 import java.time.LocalDate;
 import java.util.List;
-import java.util.UUID;
 
 public interface MaintenancePaymentService {
     public PaymentCalculationDTO calculatePayment(Long flatId , BillingCycle billingCycle);

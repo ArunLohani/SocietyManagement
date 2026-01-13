@@ -11,6 +11,7 @@ import com.project.societyManagement.queryBuilder.complaints.ComplaintsFilter;
 import com.project.societyManagement.queryBuilder.complaints.ComplaintsQueryBuilder;
 import com.project.societyManagement.repository.ComplaintsRepo;
 import com.project.societyManagement.service.*;
+import com.project.societyManagement.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -28,6 +29,8 @@ public class ComplaintsServiceImpl implements ComplaintsService {
     private final UserService userService;
     private final NotificationService notificationService;
     private final EmailService emailService;
+    private final ValidationUtil validationUtil;
+
     public Complaints getComplaintById(Long complaintId){
         ComplaintsFilter filter = new ComplaintsFilter();
         filter.setId(complaintId);
@@ -36,6 +39,7 @@ public class ComplaintsServiceImpl implements ComplaintsService {
     }
 
     public Complaints issueComplaint(ComplaintIssuingRequest complaintRequest){
+        validationUtil.validate(complaintRequest);
         Complaints complaint = modelMapper.map(complaintRequest,Complaints.class);
         Tenant tenant = tenantService.findTenantById(TenantContextHolder.getCurrentTenant());
         User user = userService.findUserById(complaintRequest.getRaisedByUser());

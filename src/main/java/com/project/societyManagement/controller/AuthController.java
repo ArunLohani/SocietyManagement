@@ -6,7 +6,6 @@ import com.project.societyManagement.dto.Auth.Request.RegisterRequest;
 import com.project.societyManagement.dto.Auth.Response.AuthTokenResponse;
 import com.project.societyManagement.service.AuthService;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -40,5 +39,14 @@ public class AuthController {
         log.info("Response Generated : Register Successful");
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
+
+    @PostMapping("/logout")
+    public ResponseEntity<ApiResponse<String>> logout( HttpServletResponse response) {
+        log.info("Request received for /logout endpoint.");
+        service.logout(response);
+        ApiResponse<String> apiResponse = new ApiResponse(true, "Logout Successfully", "Logout Successfully");
+        return new ResponseEntity<>(apiResponse, HttpStatus.OK);
+    }
+
 
 }

@@ -2,11 +2,9 @@ package com.project.societyManagement.service.impl;
 
 import com.project.societyManagement.entity.Role;
 import com.project.societyManagement.entity.Tenant;
-import com.project.societyManagement.entity.TenantRoleMenu;
 import com.project.societyManagement.entity.TenantRoles;
 import com.project.societyManagement.queryBuilder.tenantRole.TenantRoleFilter;
 import com.project.societyManagement.queryBuilder.tenantRole.TenantRoleQueryBuilder;
-import com.project.societyManagement.queryBuilder.tenantRoleMenu.TenantRoleMenuFilter;
 import com.project.societyManagement.repository.TenantRoleRepo;
 import com.project.societyManagement.service.RoleService;
 import com.project.societyManagement.service.TenantRoleService;
@@ -14,8 +12,8 @@ import com.project.societyManagement.service.TenantService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
+
 @Slf4j
 @Service
 public class TenantRoleServiceImpl implements TenantRoleService {
@@ -50,7 +48,7 @@ public class TenantRoleServiceImpl implements TenantRoleService {
         return tenantRoleQueryBuilder.findById(filter);
     }
 
-    public void assignRoleToTenant(Long tenantId , Long roleId){
+    public TenantRoles assignRoleToTenant(Long tenantId , Long roleId){
         Role role = roleService.findById(roleId);
         Tenant tenant = tenantService.findTenantById(tenantId);
         TenantRoleFilter tenantRoleFilter = new TenantRoleFilter();
@@ -70,6 +68,8 @@ public class TenantRoleServiceImpl implements TenantRoleService {
             tenantRoles.setIsActive(true);
             tenantRoleRepo.save(tenantRoles);
         }
+
+        return tenantRoles;
     }
 
     public void removeRoleFromTenant(Long tenantId , Long roleId){

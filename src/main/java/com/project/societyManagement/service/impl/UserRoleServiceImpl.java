@@ -1,8 +1,8 @@
 package com.project.societyManagement.service.impl;
+
 import com.project.societyManagement.dto.User.UserWithRolesDTO;
 import com.project.societyManagement.entity.Role;
 import com.project.societyManagement.entity.User;
-import com.project.societyManagement.exception.UserNotFoundException;
 import com.project.societyManagement.queryBuilder.user.UserFilter;
 import com.project.societyManagement.queryBuilder.user.UserQueryBuilder;
 import com.project.societyManagement.repository.RoleRepo;
@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
+
 @Service
 public class UserRoleServiceImpl implements UserRoleService {
 

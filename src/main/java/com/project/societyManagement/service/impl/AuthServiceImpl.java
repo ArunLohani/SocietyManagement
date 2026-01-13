@@ -5,7 +5,6 @@ import com.project.societyManagement.dto.Auth.Request.RegisterRequest;
 import com.project.societyManagement.dto.Auth.Response.AuthTokenResponse;
 import com.project.societyManagement.dto.User.UserDetails;
 import com.project.societyManagement.entity.Role;
-import com.project.societyManagement.entity.Tenant;
 import com.project.societyManagement.entity.User;
 import com.project.societyManagement.service.AuthService;
 import com.project.societyManagement.service.RoleService;
@@ -25,7 +24,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-
 import java.time.Duration;
 import java.util.HashSet;
 import java.util.Set;
@@ -54,8 +52,14 @@ public class AuthServiceImpl implements AuthService {
         User user = (User) authentication.getPrincipal();
         log.info("Generating Auth Token...");
         String token = authUtil.getAccessToken(user);
-        ResponseCookie jwtCookie = ResponseCookie.from("access_token", token).sameSite("Lax")
-                .httpOnly(false).secure(false).path("/").maxAge(Duration.ofDays(7)).build();
+        ResponseCookie jwtCookie = ResponseCookie.from("access_token", token)
+                .httpOnly(true)              // IMPORTANT for security
+                .secure(true)                // REQUIRED for HTTPS
+                .sameSite("None")            // REQUIRED for cross-site
+                .path("/")
+                .maxAge(Duration.ofDays(7))
+                .build();
+
         response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
         log.info("Auth Token Generated...");
         UserDetails userDetails = UserDetails.builder().id(user.getId()).email(user.getEmail()).name(user.getName()).roles(user.getRoles().stream().map(role -> role.getRole()).collect(Collectors.toSet())).build();
@@ -87,8 +91,14 @@ public class AuthServiceImpl implements AuthService {
             log.info("User Saved in the DB");
             log.info("Generating Auth Token...");
             String token = authUtil.getAccessToken(user);
-            ResponseCookie jwtCookie = ResponseCookie.from("access_token", token).sameSite("Lax")
-                    .httpOnly(false).secure(false).path("/").maxAge(Duration.ofDays(7)).build();
+            ResponseCookie jwtCookie = ResponseCookie.from("access_token", token)
+                    .httpOnly(true)
+                    .secure(true)          // REQUIRED
+                    .sameSite("None")      // REQUIRED
+                    .path("/")
+                    .maxAge(Duration.ofDays(7))
+                    .build();
+
             response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
             log.info("Auth Token Generated...");
             UserDetails userDetails = UserDetails.builder().id(user.getId()).email(user.getEmail()).name(user.getName()).roles(user.getRoles().stream().map(role -> role.getRole()).collect(Collectors.toSet())).build();
@@ -99,5 +109,24 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    public void logout(HttpServletResponse response){
 
+        ResponseCookie impersonationCookie = ResponseCookie.from("impersonation_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .maxAge(0)
+                .build();
+
+        ResponseCookie jwtCookie = ResponseCookie.from("access_token", "")
+                .httpOnly(true)
+                .secure(true)
+                .sameSite("None")
+                .path("/")
+                .maxAge(0)
+                .build();
+        response.addHeader(HttpHeaders.SET_COOKIE, jwtCookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, impersonationCookie.toString());
+    }
 }

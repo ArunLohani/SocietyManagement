@@ -1,9 +1,7 @@
 package com.project.societyManagement.service;
 
-import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.dto.ParkingSlot.ParkingSlotRegisterRequest;
 import com.project.societyManagement.entity.*;
-import com.project.societyManagement.entity.types.ParkingSlotStatus;
 import com.project.societyManagement.queryBuilder.parkingSlot.ParkingSlotFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

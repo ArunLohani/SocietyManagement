@@ -1,7 +1,5 @@
 package com.project.societyManagement.dto.Api;
 
-
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

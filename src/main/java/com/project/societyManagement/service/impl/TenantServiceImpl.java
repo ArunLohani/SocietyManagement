@@ -1,19 +1,14 @@
 package com.project.societyManagement.service.impl;
 
-import com.project.societyManagement.dto.User.UserDetails;
 import com.project.societyManagement.entity.*;
 import com.project.societyManagement.queryBuilder.tenant.TenantFilter;
 import com.project.societyManagement.queryBuilder.tenant.TenantQueryBuilder;
-import com.project.societyManagement.queryBuilder.tenantRoleMenu.TenantRoleMenuFilter;
-import com.project.societyManagement.queryBuilder.tenantRoleMenuAction.TenantRoleMenuActionFilter;
 import com.project.societyManagement.repository.TenantRepo;
 import com.project.societyManagement.service.TenantService;
 import com.project.societyManagement.service.UserService;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-
-import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -89,6 +84,16 @@ public class TenantServiceImpl implements TenantService {
         return tenant;
     }
 
+    @Override
+    @Transactional
+    public Tenant removeTenant(Long tenantId){
+        TenantFilter tenantFilter = new TenantFilter();
+        tenantFilter.setId(tenantId);
+        Tenant tenant = tenantQueryBuilder.findById(tenantFilter);
+        tenant.setIsActive(false);
+        tenant = tenantRepo.save(tenant);
+        return tenant;
+    }
 
 
 

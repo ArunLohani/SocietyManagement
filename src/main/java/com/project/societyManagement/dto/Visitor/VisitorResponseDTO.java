@@ -3,12 +3,10 @@ package com.project.societyManagement.dto.Visitor;
 import com.project.societyManagement.entity.Flat;
 import com.project.societyManagement.entity.User;
 import com.project.societyManagement.entity.types.VisitorStatus;
-import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.time.LocalDateTime;
 
 @Data

@@ -1,14 +1,11 @@
 package com.project.societyManagement.service;
 
-import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.dto.Flat.FlatCreationRequest;
 import com.project.societyManagement.entity.Flat;
 import com.project.societyManagement.entity.FlatMember;
-import com.project.societyManagement.entity.Tenant;
 import com.project.societyManagement.queryBuilder.flat.FlatFilter;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
 import java.util.List;
 
 public interface FlatService {

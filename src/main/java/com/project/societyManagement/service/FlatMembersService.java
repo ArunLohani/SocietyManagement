@@ -1,12 +1,9 @@
 package com.project.societyManagement.service;
 
 import com.project.societyManagement.dto.FlatMember.FlatMemberAddRequest;
-import com.project.societyManagement.entity.Flat;
 import com.project.societyManagement.entity.FlatMember;
-import com.project.societyManagement.entity.User;
 import com.project.societyManagement.entity.types.FlatMembershipType;
 import com.project.societyManagement.queryBuilder.flatMembers.FlatMembersFilter;
-
 import java.util.List;
 
 public interface FlatMembersService {

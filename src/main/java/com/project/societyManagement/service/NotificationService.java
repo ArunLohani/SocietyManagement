@@ -1,7 +1,6 @@
 package com.project.societyManagement.service;
 
 import com.project.societyManagement.entity.Notification;
-
 import java.util.List;
 
 public interface NotificationService {

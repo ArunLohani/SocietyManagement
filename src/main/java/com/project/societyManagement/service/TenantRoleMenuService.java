@@ -1,12 +1,6 @@
 package com.project.societyManagement.service;
 
-import com.project.societyManagement.entity.Menu;
 import com.project.societyManagement.entity.TenantRoleMenu;
-import com.project.societyManagement.entity.TenantRoleMenuAction;
-import com.project.societyManagement.entity.TenantRoles;
-import com.project.societyManagement.queryBuilder.tenantRole.TenantRoleFilter;
-import com.project.societyManagement.queryBuilder.tenantRoleMenu.TenantRoleMenuFilter;
-
 import java.util.List;
 
 public interface TenantRoleMenuService {

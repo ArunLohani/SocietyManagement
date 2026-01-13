@@ -5,7 +5,6 @@ import com.project.societyManagement.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
-
 import java.util.List;
 
 public interface UserService {

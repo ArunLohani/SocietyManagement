@@ -2,7 +2,6 @@ package com.project.societyManagement.service.impl;
 
 import com.project.societyManagement.dto.MaintenancePayment.PaymentReceiptDTO;
 import org.springframework.stereotype.Service;
-
 import java.time.format.DateTimeFormatter;
 
 @Service

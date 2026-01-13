@@ -1,24 +1,17 @@
 package com.project.societyManagement.service.impl;
 
-import com.project.societyManagement.dto.Auth.Request.RegisterRequest;
 import com.project.societyManagement.dto.Auth.Response.AuthTokenResponse;
 import com.project.societyManagement.dto.User.UserDetails;
 import com.project.societyManagement.entity.Role;
 import com.project.societyManagement.entity.User;
 import com.project.societyManagement.repository.RoleRepo;
-import com.project.societyManagement.service.AuthService;
 import com.project.societyManagement.service.UserService;
 import com.project.societyManagement.util.AuthUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
-
-import java.security.SecureRandom;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;

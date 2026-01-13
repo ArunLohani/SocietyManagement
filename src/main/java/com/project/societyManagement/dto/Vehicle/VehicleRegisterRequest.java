@@ -1,11 +1,6 @@
 package com.project.societyManagement.dto.Vehicle;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.project.societyManagement.entity.ParkingSlot;
-import com.project.societyManagement.entity.User;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToOne;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -17,9 +12,14 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class VehicleRegisterRequest {
 
+    @NotEmpty(message = "Registration Number cannot be null.")
     private String registrationNumber;
+    @NotEmpty(message = "Vehicle Type cannot be null.")
     private String vehicleType;
+    @NotEmpty(message = "Brand cannot be null.")
     private String brand;
+    @NotEmpty(message = "Model cannot be null.")
     private String model;
+    @NotEmpty(message = "Flat cannot be null.")
     private Long flat;
 }

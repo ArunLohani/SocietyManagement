@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xmlns:pro="http://www.liquibase.org/xml/ns/pro"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-latest.xsd
+        http://www.liquibase.org/xml/ns/dbchangelog-ext
+        http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd
+        http://www.liquibase.org/xml/ns/pro
+        http://www.liquibase.org/xml/ns/pro/liquibase-pro-latest.xsd">
+
+    <preConditions>
+        <runningAs  username="postgres"/>
+    </preConditions>
+
+    <changeSet id="create-support-ticket-table" author="Arun">
+    <sql>
+        CREATE TABLE support_tickets (
+        id BIGSERIAL PRIMARY KEY,
+
+        title VARCHAR(255) NOT NULL,
+        description TEXT,
+
+        raised_by BIGINT NOT NULL,
+        status VARCHAR(50) NOT NULL,
+
+        allow_impersonation BOOLEAN DEFAULT TRUE,
+        impersonation_until TIMESTAMP,
+
+        created_by BIGINT,
+        created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+        updated_by BIGINT,
+        updated_at TIMESTAMPTZ,
+
+        CONSTRAINT fk_support_ticket_user
+        FOREIGN KEY (raised_by)
+        REFERENCES users(id)
+        );
+    </sql>
+</changeSet>
+<changeSet id="create-impersonation-session-table" author="Arun">
+<sql>
+    CREATE TABLE impersonation_session (
+    id BIGSERIAL PRIMARY KEY,
+
+    ticket_id BIGINT NOT NULL,
+    admin_id BIGINT NOT NULL,
+    super_admin_id BIGINT NOT NULL,
+
+    expires_at TIMESTAMP NOT NULL,
+    ended_at TIMESTAMP,
+
+    created_by BIGINT,
+    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    updated_by BIGINT,
+    updated_at TIMESTAMPTZ,
+
+    CONSTRAINT fk_impersonation_ticket
+    FOREIGN KEY (ticket_id)
+    REFERENCES support_tickets(id),
+
+    CONSTRAINT fk_impersonation_admin
+    FOREIGN KEY (admin_id)
+    REFERENCES users(id),
+
+    CONSTRAINT fk_impersonation_super_admin
+    FOREIGN KEY (super_admin_id)
+    REFERENCES users(id)
+    );
+</sql>
+</changeSet>
+    <changeSet id="add-is-active-to-support-ticket-and-impersonation-session" author="Arun">
+        <sql>
+            ALTER TABLE support_tickets
+            ADD COLUMN is_active BOOLEAN DEFAULT TRUE;
+
+            ALTER TABLE impersonation_session
+            ADD COLUMN is_active BOOLEAN DEFAULT TRUE;
+        </sql>
+    </changeSet>
+
+</databaseChangeLog>

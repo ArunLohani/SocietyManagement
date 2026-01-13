@@ -71,7 +71,7 @@ public class MenuQueryBuilder extends AbstractFilterableQueryBuilder<Menu, MenuF
 //            cb.where("m.id").eq(0);
 //            return;
 //        }
-        if (roles.contains("ADMIN")){
+        if (roles.contains("ADMIN") || roles.contains("SUPER_ADMIN")){
             return ;
         }
 

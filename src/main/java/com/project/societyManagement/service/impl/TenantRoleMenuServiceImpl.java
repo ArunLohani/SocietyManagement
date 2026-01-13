@@ -1,4 +1,5 @@
 package com.project.societyManagement.service.impl;
+
 import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.entity.*;
 import com.project.societyManagement.queryBuilder.tenantRole.TenantRoleFilter;
@@ -11,9 +12,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
 import java.util.List;
+
 @Slf4j
 @Service
 public class TenantRoleMenuServiceImpl implements TenantRoleMenuService {

@@ -1,9 +1,7 @@
 package com.project.societyManagement.controller;
 
 import com.project.societyManagement.dto.Api.ApiResponse;
-import com.project.societyManagement.dto.MailDTO.CustomMailDTO;
 import com.project.societyManagement.entity.Flat;
-import com.project.societyManagement.entity.FlatMember;
 import com.project.societyManagement.entity.User;
 import com.project.societyManagement.entity.types.FlatMembershipType;
 import com.project.societyManagement.service.EmailService;
@@ -13,7 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
 @RestController
 @RequestMapping("/mail")
 @RequiredArgsConstructor

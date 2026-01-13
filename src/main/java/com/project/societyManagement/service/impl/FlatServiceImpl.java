@@ -5,12 +5,12 @@ import com.project.societyManagement.dto.Flat.FlatCreationRequest;
 import com.project.societyManagement.entity.Flat;
 import com.project.societyManagement.entity.FlatMember;
 import com.project.societyManagement.entity.Tenant;
-import com.project.societyManagement.entity.User;
 import com.project.societyManagement.queryBuilder.flat.FlatFilter;
 import com.project.societyManagement.queryBuilder.flat.FlatQueryBuilder;
 import com.project.societyManagement.repository.FlatRepo;
 import com.project.societyManagement.service.FlatService;
 import com.project.societyManagement.service.TenantService;
+import com.project.societyManagement.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -27,6 +27,7 @@ public class FlatServiceImpl implements FlatService {
     private final FlatRepo flatRepo;
     private final ModelMapper modelMapper;
     private final TenantService tenantService;
+    private final ValidationUtil validationUtil;
 
     public Flat getFlatById(Long id){
         FlatFilter flatFilter = new FlatFilter();
@@ -35,6 +36,7 @@ public class FlatServiceImpl implements FlatService {
     }
 
     public Flat createFlat(FlatCreationRequest flatCreationRequest){
+        validationUtil.validate(flatCreationRequest);
         Flat flat = modelMapper.map(flatCreationRequest,Flat.class);
         Tenant tenant = tenantService.findTenantById(TenantContextHolder.getCurrentTenant());
         flat.setTenant(tenant);
@@ -42,7 +44,7 @@ public class FlatServiceImpl implements FlatService {
     }
 
     public Flat updateFlat(Long id , FlatCreationRequest flatCreationRequest){
-
+        validationUtil.validate(flatCreationRequest);
         Flat flat = getFlatById(id);
         if (flatCreationRequest.getCategory()!=null){
             flat.setCategory(flatCreationRequest.getCategory());

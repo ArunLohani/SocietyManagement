@@ -23,6 +23,7 @@
     <include file="create-maintenance-payment-table.xml" relativeToChangelogFile="true"/>
     <include file="create-notification-table.xml" relativeToChangelogFile="true"/>
     <include file="create-visitor-request-table.xml" relativeToChangelogFile="true"/>
+    <include file="create-ticket_and_session-sharing-table.xml" relativeToChangelogFile="true"/>
 
 
 </databaseChangeLog>

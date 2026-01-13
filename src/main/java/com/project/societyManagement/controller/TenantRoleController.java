@@ -1,4 +1,5 @@
 package com.project.societyManagement.controller;
+
 import com.project.societyManagement.dto.Api.ApiResponse;
 import com.project.societyManagement.entity.TenantRoles;
 import com.project.societyManagement.service.TenantRoleService;
@@ -7,6 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
+
 @RestController
 @RequestMapping("/tenant-roles")
 public class TenantRoleController {
@@ -15,12 +17,12 @@ public class TenantRoleController {
     // Assign a role to a tenant
     @PostMapping("/assign")
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<String>> assignRoleToTenant(
+    public ResponseEntity<ApiResponse<TenantRoles>> assignRoleToTenant(
             @RequestParam Long tenantId,
             @RequestParam Long roleId) {
-        tenantRoleService.assignRoleToTenant(tenantId, roleId);
-        ApiResponse<String> response = new ApiResponse<>(true,
-                "Role assigned to tenant successfully", "Assigned");
+        TenantRoles tenantRoles = tenantRoleService.assignRoleToTenant(tenantId, roleId);
+        ApiResponse<TenantRoles> response = new ApiResponse<>(true,
+                "Role assigned to tenant successfully", tenantRoles);
         return ResponseEntity.ok(response);
     }
     // Remove a role from a tenant (soft delete)

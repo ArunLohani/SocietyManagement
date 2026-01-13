@@ -6,10 +6,10 @@ import com.project.societyManagement.dto.TenantCategoryPricing.TenantCategoryPri
 import com.project.societyManagement.dto.TenantCategoryPricing.TenantCategoryPricingResponse;
 import com.project.societyManagement.entity.TenantCategoryPricing;
 import com.project.societyManagement.service.TenantCategoryPricingService;
+import com.project.societyManagement.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
 
 @RestController
@@ -18,6 +18,7 @@ import java.util.List;
 public class TenantCategoryPricingController {
 
     private final TenantCategoryPricingService tenantCategoryPricingService;
+    private final ValidationUtil validationUtil;
 
     @RequiresPermission(api="SEARCH_MAINTENANCE_PRICING")
     @GetMapping("")
@@ -31,7 +32,7 @@ public class TenantCategoryPricingController {
     @RequiresPermission(api="EDIT_MAINTENANCE_PRICING")
     @PostMapping("")
     public ResponseEntity<ApiResponse<TenantCategoryPricing>> updateCategoryPrice(@RequestBody TenantCategoryPricingRequest tenantCategoryPricingRequest){
-
+        validationUtil.validate(tenantCategoryPricingRequest);
         TenantCategoryPricing tenantCategoryPricing = tenantCategoryPricingService.updatePricing(tenantCategoryPricingRequest.getCategory(),tenantCategoryPricingRequest.getAmount());
         ApiResponse<TenantCategoryPricing> response = new ApiResponse<>(true,
                 "Flat Category Fees updated successfully",tenantCategoryPricing);
@@ -40,6 +41,7 @@ public class TenantCategoryPricingController {
     @RequiresPermission(api="EDIT_MAINTENANCE_PRICING")
     @PostMapping("/penalty")
     public ResponseEntity<ApiResponse<TenantCategoryPricing>> updatePenaltyFee(@RequestBody TenantCategoryPricingResponse tenantCategoryPricingRequest){
+        validationUtil.validate(tenantCategoryPricingRequest);
         TenantCategoryPricing tenantCategoryPricing = tenantCategoryPricingService.updatePenaltyFee(tenantCategoryPricingRequest.getCategory(),tenantCategoryPricingRequest.getAmount());
         ApiResponse<TenantCategoryPricing> response = new ApiResponse<>(true,
                 "Flat Category Penalty Fees updated successfully",tenantCategoryPricing);

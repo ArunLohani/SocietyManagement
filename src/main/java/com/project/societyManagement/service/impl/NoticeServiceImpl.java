@@ -10,6 +10,7 @@ import com.project.societyManagement.repository.NoticeRepo;
 import com.project.societyManagement.service.NoticeService;
 import com.project.societyManagement.service.NotificationService;
 import com.project.societyManagement.service.TenantService;
+import com.project.societyManagement.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
@@ -25,15 +26,18 @@ public class NoticeServiceImpl implements NoticeService {
     private final ModelMapper modelMapper;
     private final TenantService tenantService;
     private final NotificationService notificationService;
-    public Notice createNotice(NoticeCreationRequest noticeRequest){
-        Notice notice = modelMapper.map(noticeRequest,Notice.class);
+    private final ValidationUtil validationUtil;
+
+    public Notice createNotice(NoticeCreationRequest noticeRequest) {
+        validationUtil.validate(noticeRequest);
+        Notice notice = modelMapper.map(noticeRequest, Notice.class);
         Tenant tenant = tenantService.findTenantById(TenantContextHolder.getCurrentTenant());
         notice.setTenant(tenant);
         notice = noticeRepo.save(notice);
         notificationService.notifySociety(
                 notice.getTenant().getId(),
                 "New Notice: " + notice.getTitle(),
-                "A new notice has been published: " + notice.getTitle(),"/menu/notices/"+notice.getId()
+                "A new notice has been published: " + notice.getTitle(), "/menu/notices/" + notice.getId()
         );
         return notice;
     }
@@ -46,6 +50,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     public Notice updateNotice(Long noticeId , NoticeCreationRequest noticeCreationRequest){
+        validationUtil.validate(noticeCreationRequest);
         Notice notice = getNoticeById(noticeId);
         notice = Notice.builder()
                 .title(noticeCreationRequest.getTitle())

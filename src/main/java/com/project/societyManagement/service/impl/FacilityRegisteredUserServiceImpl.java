@@ -3,7 +3,6 @@ package com.project.societyManagement.service.impl;
 import com.project.societyManagement.entity.Facility;
 import com.project.societyManagement.entity.FacilityRegisteredUser;
 import com.project.societyManagement.entity.User;
-import com.project.societyManagement.queryBuilder.facility.FacilityQueryBuilder;
 import com.project.societyManagement.queryBuilder.facilityRegisteredUser.FacilityRegisteredUserFilter;
 import com.project.societyManagement.queryBuilder.facilityRegisteredUser.FacilityRegisteredUserQueryBuilder;
 import com.project.societyManagement.repository.FacilityRegisteredUserRepo;

@@ -5,6 +5,7 @@ import com.project.societyManagement.dto.User.UserAssignmentRequest;
 import com.project.societyManagement.dto.User.UserDetails;
 import com.project.societyManagement.entity.Tenant;
 import com.project.societyManagement.service.TenantService;
+import com.project.societyManagement.util.ValidationUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -18,6 +19,8 @@ public class TenantController {
 
     @Autowired
     private TenantService tenantService;
+    @Autowired
+    private ValidationUtil validationUtil;
 
     @GetMapping("")
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
@@ -29,9 +32,9 @@ public class TenantController {
 
     @PostMapping("")
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
-    public ResponseEntity<ApiResponse<String>> createTenant(@RequestBody String tenant){
-        tenantService.createTenant(tenant);
-        ApiResponse<String> apiResponse = new ApiResponse(true, "Tenant created successfully",tenant + " Tenant created.");
+    public ResponseEntity<ApiResponse<Tenant>> createTenant(@RequestBody String tenant){
+      Tenant createdTenant =   tenantService.createTenant(tenant);
+        ApiResponse<Tenant> apiResponse = new ApiResponse(true, "Tenant created successfully",createdTenant);
         return new ResponseEntity<>(apiResponse, HttpStatus.OK);
     }
 
@@ -46,6 +49,7 @@ public class TenantController {
     @PostMapping("/addUser")
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Tenant>> assignUserToTenant(@RequestBody UserAssignmentRequest request) {
+        validationUtil.validate(request);
         Tenant response = tenantService.addUserToTenant(request.getTenantId(), request.getUserId());
         ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "User assigned to tenant successfully", response);
         return new ResponseEntity(apiResponse, HttpStatus.OK);
@@ -54,11 +58,19 @@ public class TenantController {
     @PostMapping("/removeUser")
     @PreAuthorize("hasRole('SUPER_ADMIN') or hasRole('ADMIN')")
     public ResponseEntity<ApiResponse<Tenant>> removeUserFromTenant(@RequestBody UserAssignmentRequest request) {
+        validationUtil.validate(request);
         Tenant response = tenantService.removeUserFromTenant(request.getTenantId(), request.getUserId());
         ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "User removed from tenant successfully", response);
         return new ResponseEntity(apiResponse, HttpStatus.OK);
     }
 
+    @DeleteMapping("/{tenantId}")
+    @PreAuthorize("hasRole('SUPER_ADMIN')")
+    public ResponseEntity<ApiResponse<Tenant>> removeTenant(@PathVariable Long tenantId){
+        Tenant response = tenantService.removeTenant(tenantId);
+        ApiResponse<UserDetails> apiResponse = new ApiResponse(true, "Tenant removed successfully", response);
+        return new ResponseEntity(apiResponse, HttpStatus.OK);
+    }
 
 
 }

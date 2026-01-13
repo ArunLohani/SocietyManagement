@@ -3,23 +3,18 @@ package com.project.societyManagement.service.impl;
 import com.project.societyManagement.dto.Vehicle.VehicleRegisterRequest;
 import com.project.societyManagement.dto.Vehicle.VehicleResponse;
 import com.project.societyManagement.entity.Flat;
-import com.project.societyManagement.entity.User;
 import com.project.societyManagement.entity.Vehicle;
 import com.project.societyManagement.queryBuilder.vehicle.VehicleFilter;
 import com.project.societyManagement.queryBuilder.vehicle.VehicleQueryBuilder;
 import com.project.societyManagement.repository.VehicleRepo;
 import com.project.societyManagement.service.FlatService;
 import com.project.societyManagement.service.VehicleService;
+import com.project.societyManagement.util.ValidationUtil;
 import lombok.RequiredArgsConstructor;
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
-import java.util.Base64;
 
 @Service
 @RequiredArgsConstructor
@@ -29,6 +24,7 @@ public class VehicleServiceImpl implements VehicleService {
     private final VehicleRepo vehicleRepo;
     private final ModelMapper modelMapper;
     private final FlatService flatService;
+    private final ValidationUtil validationUtil;
 
     public VehicleResponse toResponse(Vehicle vehicle) {
         VehicleResponse res = new VehicleResponse();
@@ -55,7 +51,7 @@ public class VehicleServiceImpl implements VehicleService {
 //    }
 
     public Vehicle registerVehicle(VehicleRegisterRequest vehicleRegisterRequest ){
-
+        validationUtil.validate(vehicleRegisterRequest);
         Vehicle vehicle = modelMapper.map(vehicleRegisterRequest,Vehicle.class);
         Flat flat = flatService.getFlatById(vehicleRegisterRequest.getFlat());
         vehicle.setOwningFlat(flat);
@@ -63,6 +59,7 @@ public class VehicleServiceImpl implements VehicleService {
     }
 
     public Vehicle updateVehicle(Long vehicleId,VehicleRegisterRequest vehicleRegisterRequest){
+        validationUtil.validate(vehicleRegisterRequest);
         Vehicle vehicle = findVehicleById(vehicleId);
         vehicle.setModel(vehicleRegisterRequest.getModel());
         vehicle.setBrand(vehicleRegisterRequest.getBrand());

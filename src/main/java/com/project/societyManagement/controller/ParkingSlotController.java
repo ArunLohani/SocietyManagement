@@ -4,8 +4,6 @@ import com.project.societyManagement.annotations.RequiresPermission;
 import com.project.societyManagement.dto.Api.ApiResponse;
 import com.project.societyManagement.dto.ParkingSlot.ParkingSlotRegisterRequest;
 import com.project.societyManagement.entity.ParkingSlot;
-import com.project.societyManagement.entity.User;
-import com.project.societyManagement.entity.types.ParkingSlotStatus;
 import com.project.societyManagement.queryBuilder.parkingSlot.ParkingSlotFilter;
 import com.project.societyManagement.service.ParkingSlotService;
 import lombok.RequiredArgsConstructor;

@@ -2,11 +2,10 @@ package com.project.societyManagement.controller;
 
 import com.project.societyManagement.annotations.RequiresPermission;
 import com.project.societyManagement.dto.Api.ApiResponse;
-import com.project.societyManagement.dto.ParkingSlot.ParkingBookingRequestDto;
 import com.project.societyManagement.entity.ParkingRequest;
-import com.project.societyManagement.entity.Vehicle;
 import com.project.societyManagement.queryBuilder.parkingRequest.ParkingRequestFilter;
 import com.project.societyManagement.service.ParkingRequestService;
+import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -31,7 +30,7 @@ public class ParkingBookingController {
 
     @RequiresPermission(api="CREATE_PARKING_REQUESTS")
     @PostMapping("/{flatId}")
-    public ResponseEntity<ApiResponse<ParkingRequest >> requestParkingSlot(@RequestBody Long parkingSlotId,
+    public ResponseEntity<ApiResponse<ParkingRequest >> requestParkingSlot(@RequestBody @NotEmpty Long parkingSlotId,
                                                                            @PathVariable Long flatId){
 
         ParkingRequest parkingRequest = parkingRequestService.requestParkingSlot(parkingSlotId,flatId);

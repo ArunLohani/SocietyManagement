@@ -1,6 +1,5 @@
 package com.project.societyManagement.config;
 
-
 import com.blazebit.persistence.Criteria;
 import com.blazebit.persistence.CriteriaBuilderFactory;
 import com.blazebit.persistence.spi.CriteriaBuilderConfiguration;

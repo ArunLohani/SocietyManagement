@@ -18,8 +18,6 @@ import com.project.societyManagement.handler.RestAuthenticationEntryPoint;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-
-import java.util.Arrays;
 import java.util.List;
 
 @Slf4j
@@ -31,13 +29,13 @@ public class WebSecurityConfig {
 
     @Autowired
     private RestAuthenticationEntryPoint restAuthenticationEntryPoint;
-
     private final JWTFilter jwtFilter;
     @Autowired
     private  Oauth2SuccessHandler oauth2SuccessHandler;
     @Autowired
     private CustomAccessDeniedHandler accessDeniedHandler;
     @Bean
+
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         return http
                 .cors(cors->cors.configurationSource(corsConfigurationSource()))
@@ -62,7 +60,6 @@ public class WebSecurityConfig {
                                     log.error("Oauth2 Error occurred {}", exception.getMessage());
 
                                 } ).successHandler(oauth2SuccessHandler))
-
                 .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
@@ -70,13 +67,28 @@ public class WebSecurityConfig {
     @Bean
     CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.setAllowedOrigins(List.of("http://localhost:4200"));
-        configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS","PATCH"));
-        configuration.setAllowedHeaders(List.of("*"));
+        configuration.setAllowedOrigins(List.of(
+                "http://localhost:4200",
+                "http://127.0.0.1:4200",
+                "http://192.1.200.162:4200",
+                "https://vl4fpdbc-4200.inc1.devtunnels.ms"
+        ));
+        configuration.setAllowedMethods(List.of(
+                "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
+        ));
+        configuration.setAllowedHeaders(List.of(
+                "Authorization",
+                "Content-Type",
+                "Accept",
+                "Origin",
+                "X-Requested-With"
+        ));
+        configuration.setExposedHeaders(List.of("Set-Cookie"));
         configuration.setAllowCredentials(true);
-        configuration.setExposedHeaders(List.of("Set_Cookie"));
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        UrlBasedCorsConfigurationSource source =
+                new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
+
 }

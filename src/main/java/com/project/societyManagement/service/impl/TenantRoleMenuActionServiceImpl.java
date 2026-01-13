@@ -1,7 +1,6 @@
 package com.project.societyManagement.service.impl;
 
 import com.project.societyManagement.entity.*;
-import com.project.societyManagement.exception.UserNotFoundException;
 import com.project.societyManagement.queryBuilder.action.ActionFilter;
 import com.project.societyManagement.queryBuilder.tenantRoleMenu.TenantRoleMenuFilter;
 import com.project.societyManagement.queryBuilder.tenantRoleMenu.TenantRoleMenuQueryBuilder;
@@ -16,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.security.access.AccessDeniedException;
-
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;

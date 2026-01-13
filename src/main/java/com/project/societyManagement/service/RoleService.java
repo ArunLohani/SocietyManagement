@@ -1,7 +1,6 @@
 package com.project.societyManagement.service;
 
 import com.project.societyManagement.entity.Role;
-
 import java.util.List;
 
 public interface RoleService {
