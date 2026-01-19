@@ -65,14 +65,14 @@ public class ParkingRequestServiceImpl implements ParkingRequestService {
         ParkingRequest parkingRequest = findParkingRequestById(parkingRequestId);
         parkingSlotService.occupyParkingSlot(parkingRequest.getRequestedSlot().getId(),parkingRequest.getFlat());
         parkingRequest.setStatus(ParkingRequestStatus.APPROVED);
-        notificationService.notifyUser(parkingRequest.getCreatedBy(),"Parking Request Approved","Your parking slot request for " + parkingRequest.getRequestedSlot().getArea() + "-" + parkingRequest.getRequestedSlot().getSlotNumber()+ " has been approved. The slot has been assigned to you.","/menu/parking_requests");
+        notificationService.notifyUser(parkingRequest.getCreatedBy(),"Parking Request Approved","Your parking slot request for " + parkingRequest.getRequestedSlot().getArea() + "-" + parkingRequest.getRequestedSlot().getSlotNumber()+ " has been approved. The slot has been assigned to you.","/parking_requests");
         return parkingRequestRepo.save(parkingRequest);
     }
 
     public ParkingRequest rejectParkingSlotRequest(Long parkingRequestId){
         ParkingRequest parkingRequest = findParkingRequestById(parkingRequestId);
         parkingRequest.setStatus(ParkingRequestStatus.REJECTED);
-        notificationService.notifyUser(parkingRequest.getCreatedBy(),"Parking Request Rejected","Your parking slot request for "+ parkingRequest.getRequestedSlot().getArea() + "-" + parkingRequest.getRequestedSlot().getSlotNumber() + " has been rejected. Please contact management for more details.","/menu/parking_requests");
+        notificationService.notifyUser(parkingRequest.getCreatedBy(),"Parking Request Rejected","Your parking slot request for "+ parkingRequest.getRequestedSlot().getArea() + "-" + parkingRequest.getRequestedSlot().getSlotNumber() + " has been rejected. Please contact management for more details.","/parking_requests");
         return parkingRequestRepo.save(parkingRequest);
     }
 

@@ -4,6 +4,8 @@ import com.project.societyManagement.dto.Error.ErrorResponse;
 import com.project.societyManagement.exception.UserNotFoundException;
 import com.project.societyManagement.exception.ValidationException;
 import io.jsonwebtoken.ExpiredJwtException;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
@@ -11,19 +13,22 @@ import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authorization.AuthorizationDeniedException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import java.nio.file.AccessDeniedException;
 import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(ExpiredJwtException.class)
-    public ResponseEntity<ErrorResponse<Map<String,String >>> handleExpiredJwtException(ExpiredJwtException ex){
+    public ResponseEntity<ErrorResponse<Map<String,String >>> handleExpiredJwtException(ExpiredJwtException ex , HttpServletResponse response){
 
         ErrorResponse errorResponse = new ErrorResponse(HttpStatusCode.valueOf(401),"Your JWT token has been expired. Please Login again.",ex.getMessage());
-        return new ResponseEntity<>(errorResponse,HttpStatus.UNAUTHORIZED);
+        Cookie cookie = new Cookie("access_token", null);
+        cookie.setPath("/");
+        cookie.setHttpOnly(true);
+        cookie.setMaxAge(0);
+        response.addCookie(cookie);
 
+        return new ResponseEntity<>(errorResponse,HttpStatus.UNAUTHORIZED);
     }
 
     @ExceptionHandler(AuthorizationDeniedException.class)

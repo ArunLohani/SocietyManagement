@@ -50,7 +50,7 @@ public class EventServiceImpl implements EventService {
                 event.getTenant().getId(),
                 "New Event Announced",
                 "A new event has been scheduled: " + event.getName()
-                        + ". Please check the event details for more information.","/menu/events/"+event.getId()
+                        + ". Please check the event details for more information.","/events/"+event.getId()
         );
         return modelMapper.map(eventQueryBuilder,EventResponse.class);
     }

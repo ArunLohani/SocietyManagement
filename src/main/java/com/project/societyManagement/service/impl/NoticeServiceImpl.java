@@ -37,7 +37,7 @@ public class NoticeServiceImpl implements NoticeService {
         notificationService.notifySociety(
                 notice.getTenant().getId(),
                 "New Notice: " + notice.getTitle(),
-                "A new notice has been published: " + notice.getTitle(), "/menu/notices/" + notice.getId()
+                "A new notice has been published: " + notice.getTitle(), "/notices/" + notice.getId()
         );
         return notice;
     }

@@ -69,14 +69,14 @@ public class ComplaintsServiceImpl implements ComplaintsService {
         Complaints complaints = getComplaintById(complaintId);
         User user = userService.findUserById(userId);
         complaints.setAssignedToUser(user);
-        notificationService.notifyUser(complaints.getAssignedToUser().getId(),"Complaint Assigned to You","A new complaint has been assigned to you. Please take appropriate action.","/menu/complaints/"+complaintId);
+        notificationService.notifyUser(complaints.getAssignedToUser().getId(),"Complaint Assigned to You","A new complaint has been assigned to you. Please take appropriate action.","/complaints/"+complaintId);
         return complaintsRepo.save(complaints);
     }
 
     public Complaints changeComplaintStatus(Long complaintId , String status){
         Complaints complaints = getComplaintById(complaintId);
         complaints.setStatus(ComplaintStatus.valueOf(status));
-        notificationService.notifyUser(complaints.getRaisedByUser().getId(),"Your Complaint Status Change","The status of your complaint has been changed to "+status,"/menu/complaints/"+complaintId);
+        notificationService.notifyUser(complaints.getRaisedByUser().getId(),"Your Complaint Status Change","The status of your complaint has been changed to "+status,"/complaints/"+complaintId);
         return complaintsRepo.save(complaints);
     }
 
