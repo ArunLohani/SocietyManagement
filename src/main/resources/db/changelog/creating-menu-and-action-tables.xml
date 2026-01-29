@@ -117,8 +117,8 @@
                 INSERT INTO action (action, created_by, is_active) VALUES
                 ('CREATE', 1, TRUE),
                 ('READ', 1, TRUE),
-                ('UPDATE', 1, TRUE),
-                ('DELETE', 1, TRUE);
+                ('UPDATE', 1, TRUE);
+<!--                ('DELETE', 1, TRUE);-->
             </sql>
         </changeSet>
         <changeSet id="insert-sample-data-tenant-role" author="Arun">
@@ -143,8 +143,8 @@
                 INSERT INTO tenant_role_menu_action (tenant_role_menu_id, action_id, created_by, is_active) VALUES
                 (1, 1, 1, TRUE),
                 (1, 2, 1, TRUE),
-                (2, 3, 1, TRUE),
-                (2, 4, 1, TRUE);
+                (2, 3, 1, TRUE);
+<!--                (2, 4, 1, TRUE);-->
             </sql>
         </changeSet>
 

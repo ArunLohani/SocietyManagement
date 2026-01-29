@@ -48,7 +48,9 @@ public class WebSecurityConfig {
                                         "/v3/api-docs",
                                         "/swagger-ui/**",
                                         "/swagger-ui.html",
-                                        "/actuator/refresh").permitAll()
+                                        "/actuator/refresh",
+                                        "/actuator/health"
+                                        ).permitAll()
                                 .anyRequest().authenticated())
                 .exceptionHandling(exceptions -> exceptions
                         .authenticationEntryPoint(restAuthenticationEntryPoint)
