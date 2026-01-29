@@ -27,9 +27,9 @@ jobs:
           docker push socialfew2805/backend:latest
           docker push socialfew2805/backend:${GITHUB_SHA::7}
 
-#      - name: Trigger deployment
-#        run: |
-#          curl -X POST \
-#            -H "Authorization: token ${{ secrets.DEPLOY_TOKEN }}" \
-#            https://api.github.com/repos/ArunLohani/deployment-stack/dispatches \
-#            -d '{"event_type":"deploy","client_payload":{"backend":"latest"}}'
+      - name: Trigger deployment
+        run: |
+          curl -X POST \
+            -H "Authorization: token ${{ secrets.DEPLOY_TOKEN }}" \
+            https://api.github.com/repos/ArunLohani/deployment-stack/dispatches \
+            -d '{"event_type":"deploy","client_payload":{"backend":"latest"}}'
