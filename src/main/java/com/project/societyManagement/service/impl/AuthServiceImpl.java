@@ -1,5 +1,6 @@
 package com.project.societyManagement.service.impl;
 
+import com.project.societyManagement.annotations.Auditing;
 import com.project.societyManagement.dto.Auth.Request.LoginRequest;
 import com.project.societyManagement.dto.Auth.Request.RegisterRequest;
 import com.project.societyManagement.dto.Auth.Response.AuthTokenResponse;
@@ -17,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -44,6 +46,7 @@ public class AuthServiceImpl implements AuthService {
     @Autowired
     private AuthenticationManager authenticationManager;
 
+    @Auditing(entity = "User",action = "LOGIN")
     public AuthTokenResponse login(LoginRequest loginRequest, HttpServletResponse response) {
         validationUtil.validate(loginRequest);
         log.info("Authenticating User Credentials...");
@@ -66,6 +69,7 @@ public class AuthServiceImpl implements AuthService {
         return new AuthTokenResponse(token, userDetails);
     }
 
+    @Auditing(entity = "User",action = "REGISTER")
     public AuthTokenResponse register(RegisterRequest registerRequest, HttpServletResponse response) {
         validationUtil.validate(registerRequest);
         Boolean existingUser = userService.findExistingUserByEmail(registerRequest.getEmail());
@@ -109,6 +113,16 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
+    @CacheEvict(
+            value = "userProfile",
+            key = "T(org.springframework.security.core.context.SecurityContextHolder)" +
+                    ".getContext().getAuthentication().getPrincipal().id + '_' +" +
+                    "T(org.springframework.security.core.context.SecurityContextHolder)" +
+                    ".getContext().getAuthentication().getPrincipal().email",
+            beforeInvocation = true
+    )
+
+    @Auditing(entity = "User",action = "Logout")
     public void logout(HttpServletResponse response){
 
         ResponseCookie impersonationCookie = ResponseCookie.from("impersonation_token", "")

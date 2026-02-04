@@ -1,5 +1,6 @@
 package com.project.societyManagement.service.impl;
 
+import com.project.societyManagement.annotations.Auditing;
 import com.project.societyManagement.entity.Action;
 import com.project.societyManagement.queryBuilder.action.ActionFilter;
 import com.project.societyManagement.queryBuilder.action.ActionQueryBuilder;
@@ -18,6 +19,7 @@ public class ActionServiceImpl implements ActionService {
     @Autowired
     private  ActionQueryBuilder actionQueryBuilder;
 
+    @Auditing(entity = "Action",action = "READ")
     @Override
     public Action findByAction(String action) {
         ActionFilter actionFilter = new ActionFilter();
@@ -26,6 +28,7 @@ public class ActionServiceImpl implements ActionService {
         return actions;
     }
 
+    @Auditing(entity = "Action",action = "READ")
     @Override
     public Action findById(Long id) {
         ActionFilter actionFilter = new ActionFilter();
@@ -34,6 +37,7 @@ public class ActionServiceImpl implements ActionService {
         return actions;
     }
 
+    @Auditing(entity = "Action",action = "READ")
     @Override
     public List<Action> getAllActions(ActionFilter actionFilter){
 

@@ -5,14 +5,17 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import jakarta.validation.constraints.NotNull;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 public class UserAssignmentRequest {
-    @NotEmpty(message = "Tenant cannot be empty.")
+
+    @NotNull(message = "Tenant cannot be null.")
     private Long tenantId;
-    @NotEmpty(message = "User cannot be empty")
+
+    @NotNull(message = "User cannot be null.")
     private Long userId;
 }

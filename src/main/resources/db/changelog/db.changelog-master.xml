@@ -24,6 +24,9 @@
     <include file="create-notification-table.xml" relativeToChangelogFile="true"/>
     <include file="create-visitor-request-table.xml" relativeToChangelogFile="true"/>
     <include file="create-ticket_and_session-sharing-table.xml" relativeToChangelogFile="true"/>
+    <include file="create-audit-logs-table.xml" relativeToChangelogFile="true"/>
+    <include file="create-impersonation-audit-log.xml" relativeToChangelogFile="true"/>
+
 
 
 </databaseChangeLog>

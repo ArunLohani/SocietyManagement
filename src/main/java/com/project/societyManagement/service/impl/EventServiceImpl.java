@@ -1,5 +1,6 @@
 package com.project.societyManagement.service.impl;
 
+import com.project.societyManagement.annotations.Auditing;
 import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.dto.Event.EventCreationRequest;
 import com.project.societyManagement.dto.Event.EventResponse;
@@ -37,6 +38,7 @@ public class EventServiceImpl implements EventService {
     private final NotificationService notificationService;
     private final ValidationUtil validationUtil;
 
+    @Auditing(entity = "Events",action = "CREATE")
     public EventResponse createEvent(EventCreationRequest eventRequest){
         validationUtil.validate(eventRequest);
         Event event = modelMapper.map(eventRequest, Event.class);
@@ -55,6 +57,7 @@ public class EventServiceImpl implements EventService {
         return modelMapper.map(eventQueryBuilder,EventResponse.class);
     }
 
+    @Auditing(entity = "Events",action = "EDIT")
     public EventResponse updateEvent(Long eventId,EventCreationRequest eventRequest){
         validationUtil.validate(eventRequest);
         Event event = getEventById(eventId);
@@ -69,7 +72,7 @@ public class EventServiceImpl implements EventService {
         event = eventRepo.save(event);
         return modelMapper.map(eventQueryBuilder,EventResponse.class);
     }
-
+    @Auditing(entity = "Events",action = "DELETE")
     public void deleteEvent(Long eventId){
         EventFilter eventFilter = new EventFilter();
         eventFilter.setId(eventId);
@@ -78,20 +81,21 @@ public class EventServiceImpl implements EventService {
         eventRepo.save(event);
     }
 
+    @Auditing(entity = "Events",action = "READ")
     public Event getEventById(Long eventId){
         EventFilter eventFilter = new EventFilter();
         eventFilter.setId(eventId);
         Event event = eventQueryBuilder.findById(eventFilter);
         return event;
     }
-
+    @Auditing(entity = "Events",action = "READ")
     public Page<Event> getEventsBySociety(Long tenantId , Pageable pageable){
         EventFilter eventFilter = new EventFilter();
         eventFilter.setTenantId(tenantId);
         Page<Event> events = eventQueryBuilder.searchPaginated(eventFilter,pageable);
         return events;
     }
-
+    @Auditing(entity = "Events",action = "READ")
     @Override
     public Page<Event> getEventsByMySociety(Pageable pageable) {
         EventFilter eventFilter = new EventFilter();
@@ -99,11 +103,12 @@ public class EventServiceImpl implements EventService {
         Page<Event> events = eventQueryBuilder.searchPaginated(eventFilter,pageable);
         return events;
     }
-
+    @Auditing(entity = "Events",action = "READ")
     public Page<Event> searchEventsPaginated(EventFilter eventFilter,Pageable pageable){
         Page<Event> events = eventQueryBuilder.searchPaginated(eventFilter,pageable);
         return events;
     }
+    @Auditing(entity = "Events",action = "EDIT")
     public String addParticipant(Long eventId , Long userId) {
         Event event = getEventById(eventId);
         User user = userService.findUserById(userId);
@@ -120,7 +125,7 @@ public class EventServiceImpl implements EventService {
         }
 
     }
-
+    @Auditing(entity = "Events",action = "EDIT")
     public String takeParticipation(Long eventId){
         Event event = getEventById(eventId);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -137,6 +142,7 @@ public class EventServiceImpl implements EventService {
        }
 
     }
+    @Auditing(entity = "Events",action = "EDIT")
     public String removeParticipants(Long eventId , Long userId) {
         Event event = getEventById(eventId);
         User user = userService.findUserById(userId);
@@ -157,6 +163,7 @@ public class EventServiceImpl implements EventService {
 
     }
 
+    @Auditing(entity = "Events",action = "EDIT")
     public String removeParticipation(Long eventId)  {
         Event event = getEventById(eventId);
         User user = (User) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -178,17 +185,19 @@ public class EventServiceImpl implements EventService {
         }
     }
 
-
+    @Auditing(entity = "Events",action = "READ")
     public List<User> getAllParticipantsForEvent(Long eventId){
         Event event = getEventById(eventId);
         return event.getParticipants();
     }
 
+    @Auditing(entity = "Events",action = "READ")
     public Set<Event> getAllEventsForUser(Long userId){
         User user = userService.findUserById(userId);
         return user.getEventsParticipated();
     }
 
+    @Auditing(entity = "Events",action = "READ")
     public Boolean isUserParticipant(Long eventId , Long userId){
         Event event = getEventById(eventId);
         User user = userService.findUserById(userId);

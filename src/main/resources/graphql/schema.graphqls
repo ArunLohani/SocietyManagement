@@ -1,0 +1,55 @@
+
+type Query {
+    userById(id : ID!) : User
+    getNoticeById(id : ID!) : Notice
+}
+
+type Mutation {
+    createNotice(input : CreateNoticeRequest! ) : Notice
+}
+
+input CreateNoticeRequest {
+    title : String
+    message : String
+    isPublic : Boolean
+    isExpired : Boolean
+    category : String
+}
+
+type User {
+    id: ID
+    name: String
+    email: String
+    phoneNumber:String
+    roles : [Role]
+    tenant : Tenant
+}
+
+type Role {
+    role : String
+    id : ID
+}
+
+type Tenant {
+    id:ID
+    name : String
+}
+
+type Notice {
+    id : ID
+    title : String
+    message : String
+    category : String
+    tenant : Tenant
+    isPublic:Boolean
+    isExpired:Boolean
+    priority: Priority
+}
+
+enum Priority {
+    LOW,
+    NORMAL,
+    URGENT
+}
+
+

@@ -1,5 +1,6 @@
 package com.project.societyManagement.service.impl;
 
+import com.project.societyManagement.annotations.Auditing;
 import com.project.societyManagement.config.TenantContextHolder;
 import com.project.societyManagement.dto.Complaints.ComplaintIssuingRequest;
 import com.project.societyManagement.entity.Complaints;
@@ -31,6 +32,7 @@ public class ComplaintsServiceImpl implements ComplaintsService {
     private final EmailService emailService;
     private final ValidationUtil validationUtil;
 
+    @Auditing(entity = "Complaints",action = "READ")
     public Complaints getComplaintById(Long complaintId){
         ComplaintsFilter filter = new ComplaintsFilter();
         filter.setId(complaintId);
@@ -38,6 +40,7 @@ public class ComplaintsServiceImpl implements ComplaintsService {
         return complaints;
     }
 
+    @Auditing(entity = "Complaints",action = "CREATE")
     public Complaints issueComplaint(ComplaintIssuingRequest complaintRequest){
         validationUtil.validate(complaintRequest);
         Complaints complaint = modelMapper.map(complaintRequest,Complaints.class);
@@ -50,6 +53,7 @@ public class ComplaintsServiceImpl implements ComplaintsService {
         return complaint;
     }
 
+    @Auditing(entity = "Complaints",action = "EDIT")
     public Complaints updateComplaint(Long complaintId,ComplaintIssuingRequest complaintRequest){
             Complaints complaints = getComplaintById(complaintId);
             complaints.setTitle(complaintRequest.getTitle());
@@ -59,12 +63,14 @@ public class ComplaintsServiceImpl implements ComplaintsService {
             return complaintsRepo.save(complaints);
     }
 
+    @Auditing(entity = "Complaints",action = "DELETE")
     public Complaints deleteComplaint(Long complaintId){
         Complaints complaints = getComplaintById(complaintId);
         complaints.setIsActive(false);
         return complaintsRepo.save(complaints);
     }
 
+    @Auditing(entity = "Complaints",action = "ASSIGN")
     public Complaints assignComplaint(Long complaintId, Long userId) {
         Complaints complaints = getComplaintById(complaintId);
         User user = userService.findUserById(userId);
@@ -73,13 +79,14 @@ public class ComplaintsServiceImpl implements ComplaintsService {
         return complaintsRepo.save(complaints);
     }
 
+    @Auditing(entity = "Complaints",action = "EDIT")
     public Complaints changeComplaintStatus(Long complaintId , String status){
         Complaints complaints = getComplaintById(complaintId);
         complaints.setStatus(ComplaintStatus.valueOf(status));
         notificationService.notifyUser(complaints.getRaisedByUser().getId(),"Your Complaint Status Change","The status of your complaint has been changed to "+status,"/complaints/"+complaintId);
         return complaintsRepo.save(complaints);
     }
-
+    @Auditing(entity = "Complaints",action = "READ")
     public Page<Complaints> listComplaintsByUser(Long userId , Pageable pageable){
         ComplaintsFilter complaintsFilter = new ComplaintsFilter();
         complaintsFilter.setRaisedByUser(userId);
@@ -87,19 +94,19 @@ public class ComplaintsServiceImpl implements ComplaintsService {
         return complaints;
     }
 
-
+    @Auditing(entity = "Complaints",action = "READ")
     public Page<Complaints> listComplaintsAssignedToUser(Long userId , Pageable pageable){
         ComplaintsFilter complaintsFilter = new ComplaintsFilter();
         complaintsFilter.setAssignedToUser(userId);
         Page<Complaints> complaints = complaintsQueryBuilder.searchPaginated(complaintsFilter,pageable);
         return complaints;
     }
-
+    @Auditing(entity = "Complaints",action = "READ")
     public Page<Complaints> searchComplaints(ComplaintsFilter filter , Pageable pageable){
         Page<Complaints> complaints = complaintsQueryBuilder.searchPaginated(filter,pageable);
         return complaints;
     }
-
+    @Auditing(entity = "Complaints",action = "EDIT")
     public Complaints addResolutionNotes(Long complaintId , String note){
         Complaints complaints = getComplaintById(complaintId);
         complaints.setResolutionNotes(note);

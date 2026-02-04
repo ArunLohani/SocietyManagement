@@ -49,14 +49,8 @@ public class UserServiceImpl implements UserService {
     }
 
     public User findUserByEmailWithoutAuth(String email){
-        UserFilter userFilter = new UserFilter();
-        userFilter.setEmail(email);
-        List<User> users = userQueryBuilder.search(userFilter);
-        if(users.isEmpty()){
-            return null;
-        }
-        User user = users.get(0);
-        return user;
+
+        return userRepo.findByEmail(email);
     }
 
     public Boolean findExistingUserByEmail(String email){

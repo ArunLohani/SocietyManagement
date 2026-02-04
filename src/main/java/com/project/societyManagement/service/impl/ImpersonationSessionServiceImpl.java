@@ -1,5 +1,7 @@
 package com.project.societyManagement.service.impl;
 
+import com.project.societyManagement.annotations.ImpersonationAuditing;
+import com.project.societyManagement.entity.types.ImpersonationAction;
 import com.project.societyManagement.exception.UserNotFoundException;
 import com.project.societyManagement.queryBuilder.impersonationSession.ImpersonationSessionFilter;
 import com.project.societyManagement.queryBuilder.impersonationSession.ImpersonationSessionQueryBuilder;
@@ -8,6 +10,7 @@ import com.project.societyManagement.service.ImpersonationSessionService;
 import com.project.societyManagement.service.SupportTicketService;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
@@ -35,6 +38,7 @@ public class ImpersonationSessionServiceImpl implements ImpersonationSessionServ
     private final SupportTicketService supportTicketService;
     private final AuthUtil authUtil;
 
+
     public ImpersonationSession findSessionById(Long sessionId){
         ImpersonationSessionFilter filter = new ImpersonationSessionFilter();
         filter.setId(sessionId);
@@ -45,6 +49,14 @@ public class ImpersonationSessionServiceImpl implements ImpersonationSessionServ
     /**
      * Creates an impersonation session for super admin to access admin's account
      */
+    @CacheEvict(
+            value = "userProfile",
+            key = "T(org.springframework.security.core.context.SecurityContextHolder)" +
+                    ".getContext().getAuthentication().getPrincipal().id + '_' +" +
+                    "T(org.springframework.security.core.context.SecurityContextHolder)" +
+                    ".getContext().getAuthentication().getPrincipal().email"
+    )
+    @ImpersonationAuditing(action = ImpersonationAction.START )
     @Transactional
     public ImpersonationSession createImpersonationSession(Long ticketId, HttpServletResponse response) {
         SupportTicket ticket = supportTicketService.getTicketById(ticketId);
@@ -134,8 +146,16 @@ public class ImpersonationSessionServiceImpl implements ImpersonationSessionServ
     /**
      * Ends an impersonation session
      */
+    @CacheEvict(
+            value = "userProfile",
+            key = "T(org.springframework.security.core.context.SecurityContextHolder)" +
+                    ".getContext().getAuthentication().getPrincipal().id + '_' +" +
+                    "T(org.springframework.security.core.context.SecurityContextHolder)" +
+                    ".getContext().getAuthentication().getPrincipal().email"
+    )
     @Transactional
-    public void endImpersonationSession(Long sessionId, User user) {
+    @ImpersonationAuditing(action = ImpersonationAction.END,reason = "Impersonation session ended by user")
+    public ImpersonationSession endImpersonationSession(Long sessionId, User user) {
 
         ImpersonationSession session = impersonationSessionRepository.findByIdWithRelations(sessionId).orElseThrow(() -> new RuntimeException("No Impersonation Session Found"));
 
@@ -146,9 +166,10 @@ public class ImpersonationSessionServiceImpl implements ImpersonationSessionServ
         }
 
         session.setEndedAt(LocalDateTime.now());
-        impersonationSessionRepository.save(session);
-
+        session = impersonationSessionRepository.save(session);
         log.info("Impersonation session {} ended by user {}", sessionId, user.getId());
+        return session;
+
     }
 
     public boolean isSessionActiveWithoutAuth(Long sessionId) {

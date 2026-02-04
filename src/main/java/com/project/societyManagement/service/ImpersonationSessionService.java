@@ -14,7 +14,7 @@ public interface ImpersonationSessionService {
     public ImpersonationSession createImpersonationSession(Long ticketId, HttpServletResponse response);
     public String generateImpersonationToken(ImpersonationSession session) ;
     @Transactional
-    public void endImpersonationSession(Long sessionId, User user);
+    public ImpersonationSession endImpersonationSession(Long sessionId, User user);
     public boolean isSessionActive(Long sessionId) ;
     public List<ImpersonationSession> getSessions(ImpersonationSessionFilter filter);
     public boolean isSessionActiveWithoutAuth(Long sessionId);

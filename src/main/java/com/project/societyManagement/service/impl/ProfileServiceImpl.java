@@ -8,18 +8,29 @@ import com.project.societyManagement.config.ImpersonationAuthenticationToken;
 import com.project.societyManagement.service.ImpersonationSessionService;
 import com.project.societyManagement.service.ProfileService;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class ProfileServiceImpl implements ProfileService {
 
     private final ImpersonationSessionService impersonationSessionService;
 
     @Override
+    @Cacheable(
+            value = "userProfile",
+            key = "#authentication.principal.id + '_' + #authentication.principal.email",
+            unless = "#result == null || #result.data == null"
+    )
     public ApiResponse<UserDetails> getMyProfile(Authentication authentication) {
+        log.info("🔥 getMyProfile() HIT – DB/logic executed for user: {}",
+                ((User) authentication.getPrincipal()).getEmail());
 
         User user = (User) authentication.getPrincipal();
 
@@ -27,10 +38,8 @@ public class ProfileServiceImpl implements ProfileService {
         Long sessionId = null;
         String superAdminEmail = null;
 
-        // ✅ Check impersonation using Authentication itself
         if (authentication instanceof ImpersonationAuthenticationToken token
                 && token.isImpersonating()) {
-
             isImpersonating = true;
             sessionId = token.getSessionId();
             superAdminEmail = token.getSuperAdminEmail();
@@ -48,16 +57,13 @@ public class ProfileServiceImpl implements ProfileService {
                         .collect(Collectors.toSet()))
                 .isImpersonating(isImpersonating);
 
-        // ✅ Add impersonation details safely
         if (isImpersonating && sessionId != null) {
-
             builder.impersonationSessionId(sessionId)
                     .superAdminEmail(superAdminEmail);
 
             try {
                 ImpersonationSession session =
                         impersonationSessionService.findSessionById(sessionId);
-
                 builder.impersonationExpiresAt(session.getExpiresAt());
             } catch (Exception ignored) {
                 // Session missing or expired — profile still valid
@@ -71,5 +77,14 @@ public class ProfileServiceImpl implements ProfileService {
                 "Your Profile has been fetched successfully",
                 userDetails
         );
+    }
+
+    // Add method to evict cache when user profile is updated
+    @CacheEvict(
+            value = "userProfile",
+            key = "#userId + '_' + #userEmail"
+    )
+    public void evictUserProfileCache(Long userId, String userEmail) {
+        log.info("🗑️ Evicting cache for user: {}", userEmail);
     }
 }

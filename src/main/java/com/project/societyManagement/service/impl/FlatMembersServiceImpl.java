@@ -1,5 +1,6 @@
 package com.project.societyManagement.service.impl;
 
+import com.project.societyManagement.annotations.Auditing;
 import com.project.societyManagement.dto.FlatMember.FlatMemberAddRequest;
 import com.project.societyManagement.entity.Flat;
 import com.project.societyManagement.entity.FlatMember;
@@ -28,6 +29,7 @@ public class FlatMembersServiceImpl implements FlatMembersService {
     private final UserService userService;
     private final ValidationUtil validationUtil;
 
+    @Auditing(entity = "FlatMember",action = "READ")
     public FlatMember flatMemberExists(Long flatId , Long userId){
         FlatMembersFilter filter = new FlatMembersFilter();
         filter.setFlat(flatId);
@@ -38,7 +40,7 @@ public class FlatMembersServiceImpl implements FlatMembersService {
         }
         return flatMembers.get(0);
     }
-
+    @Auditing(entity = "FlatMember",action = "READ")
     public FlatMember flatMemberExistsIncludeInactive(Long flatId , Long userId){
         FlatMembersFilter filter = new FlatMembersFilter();
         filter.setFlat(flatId);
@@ -50,11 +52,14 @@ public class FlatMembersServiceImpl implements FlatMembersService {
         }
         return flatMembers.get(0);
     }
+    @Auditing(entity = "FlatMember",action = "READ")
+
     public FlatMember findFlatMemberById(Long id){
         FlatMembersFilter filter = new FlatMembersFilter();
         filter.setId(id);
         return flatMembersQueryBuilder.findById(filter);
     }
+    @Auditing(entity = "FlatMember",action = "EDIT")
     public FlatMember addOwnerToFlat(Long flatId , Long userId){
       FlatMember flatMember = flatMemberExistsIncludeInactive(flatId,userId);
       if (flatMember!=null){
@@ -69,6 +74,8 @@ public class FlatMembersServiceImpl implements FlatMembersService {
       }
         return flatMembersRepo.save(flatMember);
     }
+
+    @Auditing(entity = "FlatMember",action = "EDIT")
     public FlatMember addMemberToFlat(FlatMemberAddRequest flatMemberAddRequest){
         validationUtil.validate(flatMemberAddRequest);
         FlatMember flatMember = flatMemberExistsIncludeInactive(flatMemberAddRequest.getFlatId(),flatMemberAddRequest.getUserId());
@@ -84,16 +91,21 @@ public class FlatMembersServiceImpl implements FlatMembersService {
         }
         return flatMembersRepo.save(flatMember);
     }
+
+    @Auditing(entity = "FlatMember",action = "EDIT")
     public FlatMember changeFlatMemberType(Long id , FlatMembershipType type){
         FlatMember flatMember = findFlatMemberById(id);
         flatMember.setType(type);
         return flatMembersRepo.save(flatMember);
     }
+
+    @Auditing(entity = "FlatMember",action = "EDIT")
     public FlatMember removeFlatMember(Long id){
         FlatMember flatMember = findFlatMemberById(id);
         flatMember.setIsActive(false);
         return flatMembersRepo.save(flatMember);
     }
+    @Auditing(entity = "FlatMember",action = "READ")
 
     @Override
     public List<FlatMember> getFlatMembers(FlatMembersFilter filter) {

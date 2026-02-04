@@ -30,6 +30,7 @@ public class OAuth2ServiceImpl {
         String email = oAuth2User.getAttribute("email");
         String name = oAuth2User.getAttribute("name");
         User user = userService.findUserByEmailWithoutAuth(email);
+        log.info("USER , {}",user);
         AuthTokenResponse authTokenResponse = null;
         //Signup
         if (user == null) {
